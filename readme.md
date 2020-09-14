@@ -34,16 +34,16 @@ npm install micromark-extension-gfm-autolink-literal
 
 ## API
 
-### `syntax`
-
 ### `html`
 
-> Note: `syntax` is the default export of this module, html is available at
+### `syntax`
+
+> Note: `syntax` is the default export of this module, `html` is available at
 > `micromark-extension-gfm-autolink-literal/html`.
 
 Support [literal autolinks][].
 The exports are extensions, respectively for the micromark parser (to tokenize;
-can be passed in `extensions`) and the default HTML compiler (to compile as a
+can be passed in `extensions`) and the default HTML compiler (to compile as
 `<a>` elements; can be passed in `htmlExtensions`).
 
 ## Related
