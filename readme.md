@@ -8,17 +8,12 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-**[micromark][]** extension to support GitHub flavored markdown literal
-autolinks.
+**[micromark][]** extension to support GitHub flavored markdown [literal
+autolinks][].
+This syntax extension matches the GFM spec and github.com.
 
 This package provides the low-level modules for integrating with the micromark
 tokenizer and the micromark HTML compiler.
-
-The [literal autolinks][] defined by GFM allow URLs in Markdown when not
-enclosed in angle brackets in three forms: when preceded by `www.`
-(`www.example.com`); preceded by `http://` or `https://` (`https://example.com`);
-or when an email (`a@b.com`).
-This syntax extension matches the GitHub parser.
 
 You probably shouldn’t use this package directly, but instead use
 [`mdast-util-gfm-autolink-literal`][mdast-util-gfm-autolink-literal] with
@@ -42,9 +37,9 @@ npm install micromark-extension-gfm-autolink-literal
 > `micromark-extension-gfm-autolink-literal/html`.
 
 Support [literal autolinks][].
-The exports are extensions, respectively for the micromark parser (to tokenize;
-can be passed in `extensions`) and the default HTML compiler (to compile as
-`<a>` elements; can be passed in `htmlExtensions`).
+The exports are extensions for the micromark parser (to tokenize; can be passed
+in `extensions`) and the default HTML compiler (to compile as `<a>` elements;
+can be passed in `htmlExtensions`).
 
 ## Related
 
