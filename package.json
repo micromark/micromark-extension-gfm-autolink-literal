@@ -31,7 +31,7 @@
     "syntax.js"
   ],
   "dependencies": {
-    "micromark": "~2.5.0"
+    "micromark": "~2.6.0"
   },
   "devDependencies": {
     "nyc": "^15.0.0",
