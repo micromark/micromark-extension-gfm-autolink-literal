@@ -1,6 +1,5 @@
 var asciiAlphanumeric = require('micromark/dist/character/ascii-alphanumeric')
 var asciiAlpha = require('micromark/dist/character/ascii-alpha')
-var lowercase = require('micromark/dist/util/lowercase')
 
 var domain = {tokenize: tokenizeDomain}
 var path = {tokenize: tokenizePath}
@@ -8,9 +7,9 @@ var punctuation = {tokenize: tokenizePunctuation}
 var paren = {tokenize: tokenizeParen}
 var namedCharacterReference = {tokenize: tokenizeNamedCharacterReference}
 
-var wwwAutolink = {tokenize: tokenizeWwwAutolink}
-var httpAutolink = {tokenize: tokenizeHttpAutolink}
-var emailAutolink = {tokenize: tokenizeEmailAutolink}
+var wwwAutolink = {tokenize: tokenizeWwwAutolink, previous: previous}
+var httpAutolink = {tokenize: tokenizeHttpAutolink, previous: previous}
+var emailAutolink = {tokenize: tokenizeEmailAutolink, previous: previous}
 
 var text = {}
 
@@ -46,14 +45,14 @@ text[87] = [emailAutolink, wwwAutolink]
 text[119] = [emailAutolink, wwwAutolink]
 
 function tokenizeEmailAutolink(effects, ok, nok) {
-  var previous = this.previous
+  var self = this
   var hasDot
 
   return start
 
   function start(code) {
-    // Matches a correct atext character and a correct preceding code.
-    if (!gfmAtext(code) || !acceptableBefore(previous)) {
+    /* istanbul ignore next - hooks. */
+    if (!gfmAtext(code) || !previous(self.previous)) {
       return nok(code)
     }
 
@@ -108,7 +107,16 @@ function tokenizeEmailAutolink(effects, ok, nok) {
 
   function dashOrUnderscoreContinuation(code) {
     effects.consume(code)
-    return label
+    return afterDashOrUnderscore
+  }
+
+  function afterDashOrUnderscore(code) {
+    // `.`
+    if (code === 46) {
+      return effects.check(punctuation, nok, dotContinuation)(code)
+    }
+
+    return label(code)
   }
 
   function done(code) {
@@ -123,13 +131,13 @@ function tokenizeEmailAutolink(effects, ok, nok) {
 }
 
 function tokenizeWwwAutolink(effects, ok, nok) {
-  var previous = this.previous
+  var self = this
 
   return start
 
   function start(code) {
-    // Matches a `w` and a correct preceding code.
-    if (lowercase(code) !== 119 || !acceptableBefore(previous)) {
+    /* istanbul ignore next - hooks. */
+    if ((code !== 87 && code - 32 !== 87) || !previous(self.previous)) {
       return nok(code)
     }
 
@@ -141,7 +149,7 @@ function tokenizeWwwAutolink(effects, ok, nok) {
 
   function w2(code) {
     // `w`
-    if (lowercase(code) === 119) {
+    if (code === 87 || code - 32 === 87) {
       effects.consume(code)
       return w3
     }
@@ -151,7 +159,7 @@ function tokenizeWwwAutolink(effects, ok, nok) {
 
   function w3(code) {
     // `w`
-    if (lowercase(code) === 119) {
+    if (code === 87 || code - 32 === 87) {
       effects.consume(code)
       return dot
     }
@@ -177,13 +185,13 @@ function tokenizeWwwAutolink(effects, ok, nok) {
 }
 
 function tokenizeHttpAutolink(effects, ok, nok) {
-  var previous = this.previous
+  var self = this
 
   return start
 
   function start(code) {
-    // Matches a `h` and a correct preceding code.
-    if (lowercase(code) !== 104 || !acceptableBefore(previous)) {
+    /* istanbul ignore next - hooks. */
+    if ((code !== 72 && code - 32 !== 72) || !previous(self.previous)) {
       return nok(code)
     }
 
@@ -195,7 +203,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
 
   function t1(code) {
     // `t`
-    if (lowercase(code) === 116) {
+    if (code === 84 || code - 32 === 84) {
       effects.consume(code)
       return t2
     }
@@ -205,7 +213,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
 
   function t2(code) {
     // `t`
-    if (lowercase(code) === 116) {
+    if (code === 84 || code - 32 === 84) {
       effects.consume(code)
       return p
     }
@@ -215,7 +223,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
 
   function p(code) {
     // `p`
-    if (lowercase(code) === 112) {
+    if (code === 80 || code - 32 === 80) {
       effects.consume(code)
       return s
     }
@@ -225,7 +233,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
 
   function s(code) {
     // `s`
-    if (lowercase(code) === 115) {
+    if (code === 83 || code - 32 === 83) {
       effects.consume(code)
       return colon
     }
@@ -519,7 +527,7 @@ function gfmAtext(code) {
   )
 }
 
-function acceptableBefore(code) {
+function previous(code) {
   return (
     // EOF.
     code === null ||
