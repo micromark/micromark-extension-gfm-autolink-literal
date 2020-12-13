@@ -27,7 +27,19 @@ test('markdown -> html (micromark)', function (t) {
   t.deepEqual(
     micromark('www.a.)', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a.">www.a.</a>)</p>',
-    'should support not crash on a closing paren at TLD'
+    'should support a closing paren at TLD'
+  )
+
+  t.deepEqual(
+    micromark('www.a b', {extensions: [syntax], htmlExtensions: [html]}),
+    '<p><a href="http://www.a">www.a</a> b</p>',
+    'should support a no TLD'
+  )
+
+  t.deepEqual(
+    micromark('www.a/b c', {extensions: [syntax], htmlExtensions: [html]}),
+    '<p><a href="http://www.a/b">www.a/b</a> c</p>',
+    'should support a path instead of told'
   )
 
   t.end()

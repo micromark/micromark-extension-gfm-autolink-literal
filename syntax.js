@@ -281,7 +281,6 @@ function tokenizeHttpAutolink(effects, ok, nok) {
 function tokenizeDomain(effects, ok, nok) {
   var hasUnderscoreInLastSegment
   var hasUnderscoreInLastLastSegment
-  var hasDot
 
   return start
 
@@ -316,18 +315,13 @@ function tokenizeDomain(effects, ok, nok) {
 
   function dotContinuation(code) {
     effects.consume(code)
-    hasDot = true
     hasUnderscoreInLastLastSegment = hasUnderscoreInLastSegment
     hasUnderscoreInLastSegment = undefined
     return domain
   }
 
   function done(code) {
-    if (
-      hasDot &&
-      !hasUnderscoreInLastLastSegment &&
-      !hasUnderscoreInLastSegment
-    ) {
+    if (!hasUnderscoreInLastLastSegment && !hasUnderscoreInLastSegment) {
       effects.exit('literalAutolinkDomain')
       return ok(code)
     }
