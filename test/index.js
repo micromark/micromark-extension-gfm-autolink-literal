@@ -1,7 +1,7 @@
 var fs = require('fs')
 var path = require('path')
 var test = require('tape')
-var micromark = require('micromark')
+var micromark = require('micromark/lib')
 var syntax = require('../syntax')
 var html = require('../html')
 
@@ -19,12 +19,15 @@ test('markdown -> html (micromark)', function (t) {
   )
 
   t.deepEqual(
-    micromark(email, {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
+    micromark(email, {extensions: [syntax], htmlExtensions: [html]}),
     emailOutput,
     'should support email autolink literals'
+  )
+
+  t.deepEqual(
+    micromark('www.a.)', {extensions: [syntax], htmlExtensions: [html]}),
+    '<p><a href="http://www.a.">www.a.</a>)</p>',
+    'should support not crash on a closing paren at TLD'
   )
 
   t.end()

@@ -350,6 +350,11 @@ function tokenizePath(effects, ok) {
       return effects.check(punctuation, ok, atPathStart)(code)
     }
 
+    // `)`
+    if (code === 41) {
+      return effects.check(paren, ok, atPathStart)(code)
+    }
+
     return atPathStart(code)
   }
 
