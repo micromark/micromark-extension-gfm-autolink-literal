@@ -1,9 +1,16 @@
-var asciiAlphanumeric = require('micromark/dist/character/ascii-alphanumeric')
 var asciiAlpha = require('micromark/dist/character/ascii-alpha')
+var asciiAlphanumeric = require('micromark/dist/character/ascii-alphanumeric')
+var asciiControl = require('micromark/dist/character/ascii-control')
+var markdownLineEnding = require('micromark/dist/character/markdown-line-ending')
+var unicodePunctuation = require('micromark/dist/character/unicode-punctuation')
+var unicodeWhitespace = require('micromark/dist/character/unicode-whitespace')
 
+var www = {tokenize: tokenizeWww}
+var http = {tokenize: tokenizeHttp}
 var domain = {tokenize: tokenizeDomain}
 var path = {tokenize: tokenizePath}
 var punctuation = {tokenize: tokenizePunctuation}
+var domainPunctuation = {tokenize: tokenizeDomainPunctuation}
 var paren = {tokenize: tokenizeParen}
 var namedCharacterReference = {tokenize: tokenizeNamedCharacterReference}
 
@@ -143,38 +150,11 @@ function tokenizeWwwAutolink(effects, ok, nok) {
 
     effects.enter('literalAutolink')
     effects.enter('literalAutolinkWww')
-    effects.consume(code)
-    return w2
-  }
-
-  function w2(code) {
-    // `w`
-    if (code === 87 || code - 32 === 87) {
-      effects.consume(code)
-      return w3
-    }
-
-    return nok(code)
-  }
-
-  function w3(code) {
-    // `w`
-    if (code === 87 || code - 32 === 87) {
-      effects.consume(code)
-      return dot
-    }
-
-    return nok(code)
-  }
-
-  function dot(code) {
-    // `.`
-    if (code === 46) {
-      effects.consume(code)
-      return effects.attempt(domain, effects.attempt(path, done), nok)
-    }
-
-    return nok(code)
+    return effects.check(
+      www,
+      effects.attempt(domain, effects.attempt(path, done), nok),
+      nok
+    )(code)
   }
 
   function done(code) {
@@ -197,6 +177,25 @@ function tokenizeHttpAutolink(effects, ok, nok) {
 
     effects.enter('literalAutolink')
     effects.enter('literalAutolinkHttp')
+    return effects.check(
+      http,
+      effects.attempt(domain, effects.attempt(path, done), nok),
+      nok
+    )(code)
+  }
+
+  function done(code) {
+    effects.exit('literalAutolinkHttp')
+    effects.exit('literalAutolink')
+    return ok(code)
+  }
+}
+
+function tokenizeHttp(effects, ok, nok) {
+  return start
+
+  function start(code) {
+    // Assume a `h`.
     effects.consume(code)
     return t1
   }
@@ -265,63 +264,130 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     // `/`
     if (code === 47) {
       effects.consume(code)
-      return effects.attempt(domain, effects.attempt(path, done), nok)
+      return after
     }
 
     return nok(code)
   }
 
-  function done(code) {
-    effects.exit('literalAutolinkHttp')
-    effects.exit('literalAutolink')
-    return ok(code)
+  function after(code) {
+    return asciiControl(code) ||
+      unicodeWhitespace(code) ||
+      unicodePunctuation(code)
+      ? nok(code)
+      : ok(code)
+  }
+}
+
+function tokenizeWww(effects, ok, nok) {
+  return start
+
+  function start(code) {
+    // Assume a `w`.
+    effects.consume(code)
+    return w2
+  }
+
+  function w2(code) {
+    // `w`
+    if (code === 87 || code - 32 === 87) {
+      effects.consume(code)
+      return w3
+    }
+
+    return nok(code)
+  }
+
+  function w3(code) {
+    // `w`
+    if (code === 87 || code - 32 === 87) {
+      effects.consume(code)
+      return dot
+    }
+
+    return nok(code)
+  }
+
+  function dot(code) {
+    // `.`
+    if (code === 46) {
+      effects.consume(code)
+      return after
+    }
+
+    return nok(code)
+  }
+
+  function after(code) {
+    return code === null || markdownLineEnding(code) ? nok(code) : ok(code)
   }
 }
 
 function tokenizeDomain(effects, ok, nok) {
+  var opened
   var hasUnderscoreInLastSegment
   var hasUnderscoreInLastLastSegment
 
-  return start
-
-  function start(code) {
-    effects.enter('literalAutolinkDomain')
-    return domain(code)
-  }
+  return domain
 
   function domain(code) {
     if (
-      // `-`
-      code === 45 ||
-      // `_`
-      code === 95 ||
-      asciiAlphanumeric(code)
+      // `/`
+      code === 47 ||
+      asciiControl(code) ||
+      unicodeWhitespace(code)
     ) {
-      if (code === 95) {
-        hasUnderscoreInLastSegment = true
-      }
+      return done(code)
+    }
 
+    if (
+      // `.`
+      code === 46 ||
+      trailingPunctuation(code)
+    ) {
+      return effects.check(
+        domainPunctuation,
+        done,
+        punctuationContinuation
+      )(code)
+    }
+
+    open()
+    effects.consume(code)
+    return domain
+  }
+
+  function punctuationContinuation(code) {
+    // `.`
+    if (code === 46) {
+      hasUnderscoreInLastLastSegment = hasUnderscoreInLastSegment
+      hasUnderscoreInLastSegment = undefined
+      open()
       effects.consume(code)
       return domain
     }
 
-    // `.`
-    if (code === 46) {
-      return effects.check(punctuation, done, dotContinuation)(code)
-    }
+    // `_`
+    if (code === 95) hasUnderscoreInLastSegment = true
 
-    return done(code)
-  }
-
-  function dotContinuation(code) {
+    open()
     effects.consume(code)
-    hasUnderscoreInLastLastSegment = hasUnderscoreInLastSegment
-    hasUnderscoreInLastSegment = undefined
     return domain
   }
 
+  function open() {
+    if (!opened) {
+      effects.enter('literalAutolinkDomain')
+      opened = true
+    }
+  }
+
   function done(code) {
-    if (!hasUnderscoreInLastLastSegment && !hasUnderscoreInLastSegment) {
+    if (
+      opened &&
+      !hasUnderscoreInLastLastSegment &&
+      !hasUnderscoreInLastSegment
+    ) {
       effects.exit('literalAutolinkDomain')
       return ok(code)
     }
@@ -336,24 +402,12 @@ function tokenizePath(effects, ok) {
   return start
 
   function start(code) {
-    if (pathEnd(code)) {
-      return ok(code)
-    }
-
-    if (trailingPunctuation(code)) {
-      return effects.check(punctuation, ok, atPathStart)(code)
-    }
-
-    // `)`
-    if (code === 41) {
-      return effects.check(paren, ok, atPathStart)(code)
-    }
-
-    return atPathStart(code)
+    // `/`
+    return code === 47 ? atPathStart(code) : ok(code)
   }
 
   function atPathStart(code) {
-    effects.enter('literalAutolinkWwwPath')
+    effects.enter('literalAutolinkPath')
     return inPath(code)
   }
 
@@ -400,7 +454,7 @@ function tokenizePath(effects, ok) {
   }
 
   function atPathEnd(code) {
-    effects.exit('literalAutolinkWwwPath')
+    effects.exit('literalAutolinkPath')
     return ok(code)
   }
 }
@@ -478,23 +532,57 @@ function tokenizePunctuation(effects, ok, nok) {
   }
 }
 
+function tokenizeDomainPunctuation(effects, ok, nok) {
+  return start
+
+  function start(code) {
+    effects.enter('literalAutolinkPunctuation')
+    // Always a valid trailing punctuation marker.
+    effects.consume(code)
+    return after
+  }
+
+  function after(code) {
+    // Check the next.
+    if (trailingPunctuation(code)) {
+      effects.consume(code)
+      return after
+    }
+
+    // If the punctuation marker is followed by the end of the path, it’s not
+    // continued punctuation.
+    effects.exit('literalAutolinkPunctuation')
+    return pathEnd(code) ? ok(code) : nok(code)
+  }
+}
+
 function trailingPunctuation(code) {
   return (
-    // Exclamation mark.
+    // `!`
     code === 33 ||
-    // Asterisk.
+    // `"`
+    code === 34 ||
+    // `'`
+    code === 39 ||
+    // `)`
+    code === 41 ||
+    // `*`
     code === 42 ||
-    // Comma.
+    // `,`
     code === 44 ||
-    // Dot.
+    // `.`
     code === 46 ||
-    // Colon.
+    // `:`
     code === 58 ||
-    // Question mark.
+    // `;`
+    code === 59 ||
+    // `<`
+    code === 60 ||
+    // `?`
     code === 63 ||
-    // Underscore.
+    // `_`.
     code === 95 ||
-    // Tilde.
+    // `~`
     code === 126
   )
 }
@@ -507,7 +595,7 @@ function pathEnd(code) {
     code < 0 ||
     // Space.
     code === 32 ||
-    // Less than.
+    // `<`
     code === 60
   )
 }
@@ -534,13 +622,13 @@ function previous(code) {
     code < 0 ||
     // Space.
     code === 32 ||
-    // Left paren.
+    // `(`
     code === 40 ||
-    // Asterisk.
+    // `*`
     code === 42 ||
-    // Underscore.
+    // `_`.
     code === 95 ||
-    // Tilde.
+    // `~`
     code === 126
   )
 }

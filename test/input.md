@@ -106,4 +106,4 @@ a@a-b.c
 
 Can’t end in an underscore followed by a period: aaa@a.b_.
 
-Can container an underscore followed by a period: aaa@a.b_.c
+Can contain an underscore followed by a period: aaa@a.b_.c
