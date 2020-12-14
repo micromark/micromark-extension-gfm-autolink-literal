@@ -340,6 +340,15 @@ function tokenizeDomain(effects, ok, nok) {
       return done(code)
     }
 
+    // `&`
+    if (code === 38) {
+      return effects.check(
+        namedCharacterReference,
+        done,
+        punctuationContinuation
+      )(code)
+    }
+
     if (
       // `.`
       code === 46 ||

@@ -106,6 +106,62 @@ test('markdown -> html (micromark)', function (t) {
   )
 
   t.deepEqual(
+    micromark(
+      fs.readFileSync(
+        path.join(__dirname, 'domain-character-reference-like-named.md')
+      ),
+      {extensions: [syntax], htmlExtensions: [html]}
+    ),
+    fs.readFileSync(
+      path.join(__dirname, 'domain-character-reference-like-named.html'),
+      'utf8'
+    ),
+    'should support named “character references” in domains'
+  )
+
+  t.deepEqual(
+    micromark(
+      fs.readFileSync(
+        path.join(__dirname, 'domain-character-reference-like-numerical.md')
+      ),
+      {extensions: [syntax], htmlExtensions: [html]}
+    ),
+    fs.readFileSync(
+      path.join(__dirname, 'domain-character-reference-like-numerical.html'),
+      'utf8'
+    ),
+    'should support numerical “character references” in domains'
+  )
+
+  t.deepEqual(
+    micromark(
+      fs.readFileSync(
+        path.join(__dirname, 'path-character-reference-like-named.md')
+      ),
+      {extensions: [syntax], htmlExtensions: [html]}
+    ),
+    fs.readFileSync(
+      path.join(__dirname, 'path-character-reference-like-named.html'),
+      'utf8'
+    ),
+    'should support named “character references” in paths'
+  )
+
+  t.deepEqual(
+    micromark(
+      fs.readFileSync(
+        path.join(__dirname, 'path-character-reference-like-numerical.md')
+      ),
+      {extensions: [syntax], htmlExtensions: [html]}
+    ),
+    fs.readFileSync(
+      path.join(__dirname, 'path-character-reference-like-numerical.html'),
+      'utf8'
+    ),
+    'should support numerical “character references” in paths'
+  )
+
+  t.deepEqual(
     micromark('www.a.)', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a">www.a</a>.)</p>',
     'should support a closing paren at TLD'
@@ -184,6 +240,12 @@ test('markdown -> html (micromark)', function (t) {
     micromark('www.a..b.c', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a..b.c">www.a..b.c</a></p>',
     'should support adjacent dots in a domain name'
+  )
+
+  t.deepEqual(
+    micromark('www.a&a;', {extensions: [syntax], htmlExtensions: [html]}),
+    '<p><a href="http://www.a">www.a</a>&amp;a;</p>',
+    'should support named character references in domains'
   )
 
   t.end()
