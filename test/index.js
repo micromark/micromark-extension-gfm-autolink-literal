@@ -8,9 +8,6 @@ var html = require('../html')
 var input = fs.readFileSync(path.join(__dirname, 'input.md'))
 var output = fs.readFileSync(path.join(__dirname, 'output.html'), 'utf8')
 
-var email = fs.readFileSync(path.join(__dirname, 'previous.md'))
-var emailOutput = fs.readFileSync(path.join(__dirname, 'previous.html'), 'utf8')
-
 test('markdown -> html (micromark)', function (t) {
   t.deepEqual(
     micromark(input, {extensions: [syntax], htmlExtensions: [html]}),
@@ -19,9 +16,21 @@ test('markdown -> html (micromark)', function (t) {
   )
 
   t.deepEqual(
-    micromark(email, {extensions: [syntax], htmlExtensions: [html]}),
-    emailOutput,
-    'should support email autolink literals'
+    micromark(fs.readFileSync(path.join(__dirname, 'previous.md')), {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    fs.readFileSync(path.join(__dirname, 'previous.html'), 'utf8'),
+    'should support autolink literals after certain characters'
+  )
+
+  t.deepEqual(
+    micromark(fs.readFileSync(path.join(__dirname, 'previous-complex.md')), {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    fs.readFileSync(path.join(__dirname, 'previous-complex.html'), 'utf8'),
+    'should support autolink literals after certain more complex characters'
   )
 
   t.deepEqual(

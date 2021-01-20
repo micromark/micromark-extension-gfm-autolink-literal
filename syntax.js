@@ -14,9 +14,9 @@ var domainPunctuation = {tokenize: tokenizeDomainPunctuation}
 var paren = {tokenize: tokenizeParen}
 var namedCharacterReference = {tokenize: tokenizeNamedCharacterReference}
 
-var wwwAutolink = {tokenize: tokenizeWwwAutolink, previous: previous}
-var httpAutolink = {tokenize: tokenizeHttpAutolink, previous: previous}
-var emailAutolink = {tokenize: tokenizeEmailAutolink, previous: previous}
+var wwwAutolink = {tokenize: tokenizeWwwAutolink, previous: previousWww}
+var httpAutolink = {tokenize: tokenizeHttpAutolink, previous: previousHttp}
+var emailAutolink = {tokenize: tokenizeEmailAutolink, previous: previousEmail}
 
 var text = {}
 
@@ -59,7 +59,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
 
   function start(code) {
     /* istanbul ignore next - hooks. */
-    if (!gfmAtext(code) || !previous(self.previous)) {
+    if (!gfmAtext(code) || !previousEmail(self.previous)) {
       return nok(code)
     }
 
@@ -144,7 +144,7 @@ function tokenizeWwwAutolink(effects, ok, nok) {
 
   function start(code) {
     /* istanbul ignore next - hooks. */
-    if ((code !== 87 && code - 32 !== 87) || !previous(self.previous)) {
+    if ((code !== 87 && code - 32 !== 87) || !previousWww(self.previous)) {
       return nok(code)
     }
 
@@ -171,7 +171,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
 
   function start(code) {
     /* istanbul ignore next - hooks. */
-    if ((code !== 72 && code - 32 !== 72) || !previous(self.previous)) {
+    if ((code !== 72 && code - 32 !== 72) || !previousHttp(self.previous)) {
       return nok(code)
     }
 
@@ -623,21 +623,19 @@ function gfmAtext(code) {
   )
 }
 
-function previous(code) {
+function previousWww(code) {
   return (
-    // EOF.
     code === null ||
-    // CR, LF, CRLF, HT, VS.
     code < 0 ||
-    // Space.
-    code === 32 ||
-    // `(`
-    code === 40 ||
-    // `*`
-    code === 42 ||
-    // `_`.
-    code === 95 ||
-    // `~`
-    code === 126
+    unicodePunctuation(code) ||
+    unicodeWhitespace(code)
   )
+}
+
+function previousHttp(code) {
+  return code === null || !asciiAlpha(code)
+}
+
+function previousEmail(code) {
+  return code !== 47 /* `/` */ && previousHttp(code)
 }
