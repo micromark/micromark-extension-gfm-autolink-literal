@@ -4,6 +4,7 @@ var asciiControl = require('micromark/dist/character/ascii-control')
 var markdownLineEnding = require('micromark/dist/character/markdown-line-ending')
 var unicodePunctuation = require('micromark/dist/character/unicode-punctuation')
 var unicodeWhitespace = require('micromark/dist/character/unicode-whitespace')
+var types = require('micromark/dist/constant/types')
 
 var www = {tokenize: tokenizeWww}
 var http = {tokenize: tokenizeHttp}
@@ -59,7 +60,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
 
   function start(code) {
     /* istanbul ignore next - hooks. */
-    if (!gfmAtext(code) || !previousEmail(self.previous)) {
+    if (!gfmAtext(code) || !previousEmail(self.previous) || inLabelLink(self.events)) {
       return nok(code)
     }
 
@@ -144,7 +145,7 @@ function tokenizeWwwAutolink(effects, ok, nok) {
 
   function start(code) {
     /* istanbul ignore next - hooks. */
-    if ((code !== 87 && code - 32 !== 87) || !previousWww(self.previous)) {
+    if ((code !== 87 && code - 32 !== 87) || !previousWww(self.previous) || inLabelLink(self.events)) {
       return nok(code)
     }
 
@@ -171,7 +172,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
 
   function start(code) {
     /* istanbul ignore next - hooks. */
-    if ((code !== 72 && code - 32 !== 72) || !previousHttp(self.previous)) {
+    if ((code !== 72 && code - 32 !== 72) || !previousHttp(self.previous) || inLabelLink(self.events)) {
       return nok(code)
     }
 
@@ -638,4 +639,8 @@ function previousHttp(code) {
 
 function previousEmail(code) {
   return code !== 47 /* `/` */ && previousHttp(code)
+}
+
+function inLabelLink(events) {
+  return events.some(event => event[1].type === types.labelLink)
 }

@@ -107,3 +107,11 @@ a@a-b.c
 Can’t end in an underscore followed by a period: aaa@a.b_.
 
 Can contain an underscore followed by a period: aaa@a.b_.c
+
+## Link text should not be expanded
+
+[Visit www.example.com](http://www.example.com) please.
+
+[Visit http://www.example.com](http://www.example.com) please.
+
+[Mail example@example.com](mailto:example@example.com) please.
