@@ -115,3 +115,5 @@ Can contain an underscore followed by a period: aaa@a.b_.c
 [Visit http://www.example.com](http://www.example.com) please.
 
 [Mail example@example.com](mailto:example@example.com) please.
+
+[link]() <http://autolink> should still be expanded.
