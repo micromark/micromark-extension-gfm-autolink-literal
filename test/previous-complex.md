@@ -14,7 +14,7 @@ Last punctuation before caps: @noreply@example.com, @http://example.com, @https:
 
 First uppercase: Anoreply@example.com, Ahttp://example.com, Ahttps://example.com, Awww.example.com
 
-First punctuation after uppercase: [noreply@example.com, [http://example.com, [https://example.com, [www.example.com
+Punctuation after uppercase: \noreply@example.com, \http://example.com, \https://example.com, \www.example.com
 
 Last punctuation before lowercase (1): `noreply@example.com;
 
