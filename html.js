@@ -20,8 +20,9 @@ function literalAutolinkHttp(token) {
 
 function anchorFromToken(token, protocol) {
   var url = this.sliceSerialize(token)
-  var href = this.encode(normalizeUri(url))
-  this.tag('<a href="' + (protocol || '') + href + '">')
+  this.tag(
+    '<a href="' + this.encode(normalizeUri((protocol || '') + url)) + '">'
+  )
   this.raw(this.encode(url))
   this.tag('</a>')
 }

@@ -10,7 +10,20 @@
 
 **[micromark][]** extension to support GitHub flavored markdown [literal
 autolinks][].
-This syntax extension matches the GFM spec and github.com.
+
+This syntax extension matches the GFM spec and how literal autolinks work
+in several places on github.com.
+Do note that GH employs two algorithms to autolink: one at parse time,
+one at compile time (similar to how @mentions are done at compile time).
+This difference can be observed because character references and escapes
+are handled differently.
+But also because issues/PRs/comments omit (perhaps by accident?) the second
+algorithm for `www.`, `http://`, and `https://` links (but not for email links).
+
+As this is a syntax extension, it focuses on the first algorithm.
+The `html` part of this extension does not operate on an AST and hence can’t
+perform the second algorithm.
+`mdast-util-gfm-autolink-literal` adds support for the second.
 
 This package provides the low-level modules for integrating with the micromark
 tokenizer and the micromark HTML compiler.

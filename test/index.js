@@ -5,170 +5,21 @@ var micromark = require('micromark/lib')
 var syntax = require('../syntax')
 var html = require('../html')
 
-var input = fs.readFileSync(path.join(__dirname, 'input.md'))
-var output = fs.readFileSync(path.join(__dirname, 'output.html'), 'utf8')
-
 test('markdown -> html (micromark)', function (t) {
-  t.deepEqual(
-    micromark(input, {extensions: [syntax], htmlExtensions: [html]}),
-    output,
-    'should support autolink literals just like how GH does it'
-  )
+  fs.readdirSync(__dirname)
+    .filter((d) => path.extname(d) === '.md')
+    .forEach((d) => {
+      var stem = path.basename(d, '.md')
 
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'previous.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'previous.html'), 'utf8'),
-    'should support autolink literals after certain characters'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'previous-complex.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'previous-complex.html'), 'utf8'),
-    'should support autolink literals after certain more complex characters'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'www-domain-start.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'www-domain-start.html'), 'utf8'),
-    'should support certain punctuation markers at the start of a domain (www)'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'www-domain-continue.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'www-domain-continue.html'), 'utf8'),
-    'should support certain punctuation markers in a domain (www)'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'www-path-start.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'www-path-start.html'), 'utf8'),
-    'should support certain punctuation markers at the start of a path (www)'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'www-path-continue.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'www-path-continue.html'), 'utf8'),
-    'should support certain punctuation markers in a path (www)'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'www-domain-dot.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'www-domain-dot.html'), 'utf8'),
-    'should support certain punctuation markers in a domain after a dot (www)'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'http-domain-start.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'http-domain-start.html'), 'utf8'),
-    'should support certain punctuation markers at the start of a domain (http)'
-  )
-
-  t.deepEqual(
-    micromark(
-      fs.readFileSync(path.join(__dirname, 'http-domain-continue.md')),
-      {extensions: [syntax], htmlExtensions: [html]}
-    ),
-    fs.readFileSync(path.join(__dirname, 'http-domain-continue.html'), 'utf8'),
-    'should support certain punctuation markers in a domain (http)'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'http-path-start.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'http-path-start.html'), 'utf8'),
-    'should support certain punctuation markers at the start of a path (http)'
-  )
-
-  t.deepEqual(
-    micromark(fs.readFileSync(path.join(__dirname, 'http-path-continue.md')), {
-      extensions: [syntax],
-      htmlExtensions: [html]
-    }),
-    fs.readFileSync(path.join(__dirname, 'http-path-continue.html'), 'utf8'),
-    'should support certain punctuation markers in a path (http)'
-  )
-
-  t.deepEqual(
-    micromark(
-      fs.readFileSync(
-        path.join(__dirname, 'domain-character-reference-like-named.md')
-      ),
-      {extensions: [syntax], htmlExtensions: [html]}
-    ),
-    fs.readFileSync(
-      path.join(__dirname, 'domain-character-reference-like-named.html'),
-      'utf8'
-    ),
-    'should support named “character references” in domains'
-  )
-
-  t.deepEqual(
-    micromark(
-      fs.readFileSync(
-        path.join(__dirname, 'domain-character-reference-like-numerical.md')
-      ),
-      {extensions: [syntax], htmlExtensions: [html]}
-    ),
-    fs.readFileSync(
-      path.join(__dirname, 'domain-character-reference-like-numerical.html'),
-      'utf8'
-    ),
-    'should support numerical “character references” in domains'
-  )
-
-  t.deepEqual(
-    micromark(
-      fs.readFileSync(
-        path.join(__dirname, 'path-character-reference-like-named.md')
-      ),
-      {extensions: [syntax], htmlExtensions: [html]}
-    ),
-    fs.readFileSync(
-      path.join(__dirname, 'path-character-reference-like-named.html'),
-      'utf8'
-    ),
-    'should support named “character references” in paths'
-  )
-
-  t.deepEqual(
-    micromark(
-      fs.readFileSync(
-        path.join(__dirname, 'path-character-reference-like-numerical.md')
-      ),
-      {extensions: [syntax], htmlExtensions: [html]}
-    ),
-    fs.readFileSync(
-      path.join(__dirname, 'path-character-reference-like-numerical.html'),
-      'utf8'
-    ),
-    'should support numerical “character references” in paths'
-  )
+      t.deepEqual(
+        micromark(fs.readFileSync(path.join(__dirname, d)), {
+          extensions: [syntax],
+          htmlExtensions: [html]
+        }),
+        fs.readFileSync(path.join(__dirname, stem + '.html'), 'utf8'),
+        stem
+      )
+    })
 
   t.deepEqual(
     micromark('www.a.)', {extensions: [syntax], htmlExtensions: [html]}),
