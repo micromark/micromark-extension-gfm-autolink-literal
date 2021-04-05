@@ -110,5 +110,62 @@ test('markdown -> html (micromark)', function (t) {
     'should support named character references in domains'
   )
 
+  t.deepEqual(
+    micromark('https://a.bc/d/e/).', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p><a href="https://a.bc/d/e/">https://a.bc/d/e/</a>).</p>',
+    'should support a closing paren and period after a path'
+  )
+
+  t.deepEqual(
+    micromark('https://a.bc/d/e/.)', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p><a href="https://a.bc/d/e/">https://a.bc/d/e/</a>.)</p>',
+    'should support a period and closing paren after a path'
+  )
+
+  t.deepEqual(
+    micromark('https://a.bc).', {extensions: [syntax], htmlExtensions: [html]}),
+    '<p><a href="https://a.bc">https://a.bc</a>).</p>',
+    'should support a closing paren and period after a domain'
+  )
+
+  t.deepEqual(
+    micromark('https://a.bc.)', {extensions: [syntax], htmlExtensions: [html]}),
+    '<p><a href="https://a.bc">https://a.bc</a>.)</p>',
+    'should support a period and closing paren after a domain'
+  )
+
+  t.deepEqual(
+    micromark('https://a.bc).d', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p><a href="https://a.bc).d">https://a.bc).d</a></p>',
+    'should support a closing paren and period in a path'
+  )
+
+  t.deepEqual(
+    micromark('https://a.bc.)d', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p><a href="https://a.bc.)d">https://a.bc.)d</a></p>',
+    'should support a period and closing paren in a path'
+  )
+
+  t.deepEqual(
+    micromark('https://a.bc/))d', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p><a href="https://a.bc/))d">https://a.bc/))d</a></p>',
+    'should support two closing parens in a path'
+  )
+
   t.end()
 })

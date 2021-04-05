@@ -9,7 +9,6 @@ var www = {tokenize: tokenizeWww, partial: true}
 var domain = {tokenize: tokenizeDomain, partial: true}
 var path = {tokenize: tokenizePath, partial: true}
 var punctuation = {tokenize: tokenizePunctuation, partial: true}
-var paren = {tokenize: tokenizeParen, partial: true}
 var namedCharacterReference = {
   tokenize: tokenizeNamedCharacterReference,
   partial: true
@@ -410,7 +409,11 @@ function tokenizePath(effects, ok) {
 
     // `)`
     if (code === 41) {
-      return effects.check(paren, parenAtPathEnd, continuedPunctuation)(code)
+      return effects.check(
+        punctuation,
+        parenAtPathEnd,
+        continuedPunctuation
+      )(code)
     }
 
     if (pathEnd(code)) {
@@ -464,26 +467,6 @@ function tokenizeNamedCharacterReference(effects, ok, nok) {
     // If the named character reference is followed by the end of the path, it’s
     // not continued punctuation.
     return pathEnd(code) ? ok(code) : nok(code)
-  }
-}
-
-function tokenizeParen(effects, ok, nok) {
-  return start
-
-  function start(code) {
-    // Assume a right paren.
-    effects.consume(code)
-    return after
-  }
-
-  function after(code) {
-    // If the punctuation marker is followed by the end of the path, it’s not
-    // continued punctuation.
-    return pathEnd(code) ||
-      // `)`
-      code === 41
-      ? ok(code)
-      : nok(code)
   }
 }
 
