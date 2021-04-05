@@ -6,20 +6,22 @@ var syntax = require('../syntax')
 var html = require('../html')
 
 test('markdown -> html (micromark)', function (t) {
-  fs.readdirSync(__dirname)
-    .filter((d) => path.extname(d) === '.md')
-    .forEach((d) => {
-      var stem = path.basename(d, '.md')
+  var files = fs.readdirSync(__dirname).filter((d) => path.extname(d) === '.md')
+  var index = -1
 
-      t.deepEqual(
-        micromark(fs.readFileSync(path.join(__dirname, d)), {
-          extensions: [syntax],
-          htmlExtensions: [html]
-        }),
-        fs.readFileSync(path.join(__dirname, stem + '.html'), 'utf8'),
-        stem
-      )
-    })
+  while (++index < files.length) {
+    t.deepEqual(
+      micromark(fs.readFileSync(path.join(__dirname, files[index])), {
+        extensions: [syntax],
+        htmlExtensions: [html]
+      }),
+      fs.readFileSync(
+        path.join(__dirname, path.basename(files[index], '.md') + '.html'),
+        'utf8'
+      ),
+      path.basename(files[index], '.md')
+    )
+  }
 
   t.deepEqual(
     micromark('www.a.)', {extensions: [syntax], htmlExtensions: [html]}),
