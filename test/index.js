@@ -7,9 +7,9 @@ import {
   gfmAutolinkLiteralHtml as html
 } from '../index.js'
 
-test('markdown -> html (micromark)', function (t) {
-  var files = fs.readdirSync('test').filter((d) => path.extname(d) === '.md')
-  var index = -1
+test('markdown -> html (micromark)', (t) => {
+  const files = fs.readdirSync('test').filter((d) => path.extname(d) === '.md')
+  let index = -1
 
   while (++index < files.length) {
     t.deepEqual(
