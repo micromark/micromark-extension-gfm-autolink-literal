@@ -13,6 +13,7 @@ import {
   asciiAlpha,
   asciiAlphanumeric,
   asciiControl,
+  asciiDigit,
   markdownLineEndingOrSpace,
   markdownLineEnding,
   unicodePunctuation,
@@ -63,6 +64,8 @@ function tokenizeEmailAutolink(effects, ok, nok) {
   const self = this
   /** @type {boolean} */
   let hasDot
+  /** @type {boolean|undefined} */
+  let hasDigitInLastSegment
 
   return start
 
@@ -107,6 +110,10 @@ function tokenizeEmailAutolink(effects, ok, nok) {
     }
 
     if (asciiAlphanumeric(code)) {
+      if (!hasDigitInLastSegment && asciiDigit(code)) {
+        hasDigitInLastSegment = true
+      }
+
       effects.consume(code)
       return label
     }
@@ -118,6 +125,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
   function dotContinuation(code) {
     effects.consume(code)
     hasDot = true
+    hasDigitInLastSegment = undefined
     return label
   }
 
@@ -138,7 +146,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
 
   /** @type {State} */
   function done(code) {
-    if (hasDot) {
+    if (hasDot && !hasDigitInLastSegment) {
       effects.exit('literalAutolinkEmail')
       effects.exit('literalAutolink')
       return ok(code)
@@ -503,7 +511,10 @@ function tokenizePunctuation(effects, ok, nok) {
 
   /** @type {State} */
   function start(code) {
-    assert(trailingPunctuation(code), 'expected punctuation')
+    assert(
+      code === codes.dash || trailingPunctuation(code),
+      'expected punctuation'
+    )
     effects.consume(code)
     return after
   }
