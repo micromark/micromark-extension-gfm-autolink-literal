@@ -8,28 +8,29 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-**[micromark][]** extension to support GitHub flavored markdown [literal
+**[micromark][]** extension to support GitHub flavored markdown (GFM) [literal
 autolinks][].
 
 This syntax extension matches the GFM spec and how literal autolinks work
 in several places on github.com.
-Do note that GH employs two algorithms to autolink: one at parse time,
-one at compile time (similar to how @mentions are done at compile time).
-This difference can be observed because character references and escapes
-are handled differently.
+GitHub employs two algorithms to autolink: one at parse time and one at
+transform time (similar to how @mentions are done at transform time).
+This difference can be observed because character references and escapes are
+handled differently.
 But also because issues/PRs/comments omit (perhaps by accident?) the second
 algorithm for `www.`, `http://`, and `https://` links (but not for email links).
 
 As this is a syntax extension, it focuses on the first algorithm.
 The `html` part of this extension does not operate on an AST and hence can’t
 perform the second algorithm.
-`mdast-util-gfm-autolink-literal` adds support for the second.
+[`mdast-util-gfm-autolink-literal`][mdast-util-gfm-autolink-literal] adds
+support for the second.
 
-This package provides the low-level modules for integrating with the micromark
-tokenizer and the micromark HTML compiler.
+## When to use this
 
-You probably should use this package with
-[`mdast-util-gfm-autolink-literal`][mdast-util-gfm-autolink-literal].
+You should probably use [`micromark-extension-gfm`][micromark-extension-gfm],
+which combines this package with other GFM features, instead.
+Alternatively, if you don’t want all of GFM, use this package.
 
 ## Install
 
@@ -76,23 +77,28 @@ The export map supports the endorsed
 Run `node --conditions development module.js` to get instrumented dev code.
 Without this condition, production code is loaded.
 
-### `gfmAutolinkLiteralHtml`
-
 ### `gfmAutolinkLiteral`
 
-Support [literal autolinks][].
-The exports are extensions for the micromark parser (to tokenize; can be passed
-in `extensions`) and the default HTML compiler (to compile as `<a>` elements;
-can be passed in `htmlExtensions`).
+### `gfmAutolinkLiteralHtml`
+
+An extension for the micromark parser (to parse; can be passed in
+`extensions`) and one for the HTML compiler (to compile as `<a>` elements; can
+be passed in `htmlExtensions`).
 
 ## Related
 
 *   [`remarkjs/remark`][remark]
     — markdown processor powered by plugins
+*   [`remarkjs/remark-gfm`](https://github.com/remarkjs/remark-gfm)
+    — remark plugin using this and other GFM features
 *   [`micromark/micromark`][micromark]
     — the smallest commonmark-compliant markdown parser that exists
+*   [`micromark/micromark-extension-gfm`][micromark-extension-gfm]
+    — micromark extension combining this with other GFM features
 *   [`syntax-tree/mdast-util-gfm-autolink-literal`](https://github.com/syntax-tree/mdast-util-gfm-autolink-literal)
     — mdast utility to support autolink literals
+*   [`syntax-tree/mdast-util-gfm`](https://github.com/syntax-tree/mdast-util-gfm)
+    — mdast utility to support GFM
 *   [`syntax-tree/mdast-util-from-markdown`][from-markdown]
     — mdast parser using `micromark` to create mdast from markdown
 *   [`syntax-tree/mdast-util-to-markdown`][to-markdown]
@@ -163,3 +169,5 @@ abide by its terms.
 [mdast-util-gfm-autolink-literal]: https://github.com/syntax-tree/mdast-util-gfm-autolink-literal
 
 [literal autolinks]: https://github.github.com/gfm/#autolinks-extension-
+
+[micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
