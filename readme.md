@@ -42,11 +42,39 @@ Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
 npm install micromark-extension-gfm-autolink-literal
 ```
 
+## Use
+
+```js
+import {micromark} from 'micromark'
+import {
+  gfmAutolinkLiteral,
+  gfmAutolinkLiteralHtml
+} from 'micromark-extension-gfm-autolink-literal'
+
+const output = micromark('Just a URL: www.example.com.', {
+  extensions: [gfmAutolinkLiteral],
+  htmlExtensions: [gfmAutolinkLiteralHtml]
+})
+
+console.log(output)
+```
+
+Yields:
+
+```html
+<p>Just a URL: <a href="http://www.example.com">www.example.com</a>.</p>
+```
+
 ## API
 
 This package exports the following identifiers: `gfmAutolinkLiteral`,
 `gfmAutolinkLiteralHtml`.
 There is no default export.
+
+The export map supports the endorsed
+[`development` condition](https://nodejs.org/api/packages.html#packages_resolving_user_conditions).
+Run `node --conditions development module.js` to get instrumented dev code.
+Without this condition, production code is loaded.
 
 ### `gfmAutolinkLiteralHtml`
 
