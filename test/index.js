@@ -5,7 +5,7 @@ import {micromark} from 'micromark'
 import {
   gfmAutolinkLiteral as syntax,
   gfmAutolinkLiteralHtml as html
-} from '../index.js'
+} from '../dev/index.js'
 
 test('markdown -> html (micromark)', (t) => {
   const files = fs.readdirSync('test').filter((d) => path.extname(d) === '.md')
