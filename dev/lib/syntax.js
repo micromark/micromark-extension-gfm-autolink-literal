@@ -1,3 +1,13 @@
+/**
+ * @typedef {import('micromark-util-types').Extension} Extension
+ * @typedef {import('micromark-util-types').ConstructRecord} ConstructRecord
+ * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+ * @typedef {import('micromark-util-types').Previous} Previous
+ * @typedef {import('micromark-util-types').State} State
+ * @typedef {import('micromark-util-types').Event} Event
+ * @typedef {import('micromark-util-types').Code} Code
+ */
+
 import assert from 'assert'
 import {
   asciiAlpha,
@@ -23,9 +33,10 @@ const wwwAutolink = {tokenize: tokenizeWwwAutolink, previous: previousWww}
 const httpAutolink = {tokenize: tokenizeHttpAutolink, previous: previousHttp}
 const emailAutolink = {tokenize: tokenizeEmailAutolink, previous: previousEmail}
 
+/** @type {ConstructRecord} */
 const text = {}
 
-// Export hooked constructs.
+/** @type {Extension} */
 export const gfmAutolinkLiteral = {text}
 
 let code = codes.digit0
@@ -47,12 +58,15 @@ text[codes.lowercaseH] = [emailAutolink, httpAutolink]
 text[codes.uppercaseW] = [emailAutolink, wwwAutolink]
 text[codes.lowercaseW] = [emailAutolink, wwwAutolink]
 
+/** @type {Tokenizer} */
 function tokenizeEmailAutolink(effects, ok, nok) {
   const self = this
+  /** @type {boolean} */
   let hasDot
 
   return start
 
+  /** @type {State} */
   function start(code) {
     if (
       !gfmAtext(code) ||
@@ -67,6 +81,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
     return atext(code)
   }
 
+  /** @type {State} */
   function atext(code) {
     if (gfmAtext(code)) {
       effects.consume(code)
@@ -81,6 +96,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function label(code) {
     if (code === codes.dot) {
       return effects.check(punctuation, done, dotContinuation)(code)
@@ -98,17 +114,20 @@ function tokenizeEmailAutolink(effects, ok, nok) {
     return done(code)
   }
 
+  /** @type {State} */
   function dotContinuation(code) {
     effects.consume(code)
     hasDot = true
     return label
   }
 
+  /** @type {State} */
   function dashOrUnderscoreContinuation(code) {
     effects.consume(code)
     return afterDashOrUnderscore
   }
 
+  /** @type {State} */
   function afterDashOrUnderscore(code) {
     if (code === codes.dot) {
       return effects.check(punctuation, nok, dotContinuation)(code)
@@ -117,6 +136,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
     return label(code)
   }
 
+  /** @type {State} */
   function done(code) {
     if (hasDot) {
       effects.exit('literalAutolinkEmail')
@@ -128,11 +148,13 @@ function tokenizeEmailAutolink(effects, ok, nok) {
   }
 }
 
+/** @type {Tokenizer} */
 function tokenizeWwwAutolink(effects, ok, nok) {
   const self = this
 
   return start
 
+  /** @type {State} */
   function start(code) {
     if (
       (code !== codes.uppercaseW && code !== codes.lowercaseW) ||
@@ -154,6 +176,7 @@ function tokenizeWwwAutolink(effects, ok, nok) {
     )(code)
   }
 
+  /** @type {State} */
   function done(code) {
     effects.exit('literalAutolinkWww')
     effects.exit('literalAutolink')
@@ -161,11 +184,13 @@ function tokenizeWwwAutolink(effects, ok, nok) {
   }
 }
 
+/** @type {Tokenizer} */
 function tokenizeHttpAutolink(effects, ok, nok) {
   const self = this
 
   return start
 
+  /** @type {State} */
   function start(code) {
     if (
       (code !== codes.uppercaseH && code !== codes.lowercaseH) ||
@@ -181,6 +206,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     return t1
   }
 
+  /** @type {State} */
   function t1(code) {
     if (code === codes.uppercaseT || code === codes.lowercaseT) {
       effects.consume(code)
@@ -190,6 +216,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function t2(code) {
     if (code === codes.uppercaseT || code === codes.lowercaseT) {
       effects.consume(code)
@@ -199,6 +226,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function p(code) {
     if (code === codes.uppercaseP || code === codes.lowercaseP) {
       effects.consume(code)
@@ -208,6 +236,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function s(code) {
     if (code === codes.uppercaseS || code === codes.lowercaseS) {
       effects.consume(code)
@@ -217,6 +246,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     return colon(code)
   }
 
+  /** @type {State} */
   function colon(code) {
     if (code === codes.colon) {
       effects.consume(code)
@@ -226,6 +256,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function slash1(code) {
     if (code === codes.slash) {
       effects.consume(code)
@@ -235,6 +266,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function slash2(code) {
     if (code === codes.slash) {
       effects.consume(code)
@@ -244,6 +276,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function after(code) {
     return code === codes.eof ||
       asciiControl(code) ||
@@ -253,6 +286,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
       : effects.attempt(domain, effects.attempt(path, done), nok)(code)
   }
 
+  /** @type {State} */
   function done(code) {
     effects.exit('literalAutolinkHttp')
     effects.exit('literalAutolink')
@@ -260,9 +294,11 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 }
 
+/** @type {Tokenizer} */
 function tokenizeWww(effects, ok, nok) {
   return start
 
+  /** @type {State} */
   function start(code) {
     assert(
       code === codes.uppercaseW || code === codes.lowercaseW,
@@ -272,6 +308,7 @@ function tokenizeWww(effects, ok, nok) {
     return w2
   }
 
+  /** @type {State} */
   function w2(code) {
     if (code === codes.uppercaseW || code === codes.lowercaseW) {
       effects.consume(code)
@@ -281,6 +318,7 @@ function tokenizeWww(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function w3(code) {
     if (code === codes.uppercaseW || code === codes.lowercaseW) {
       effects.consume(code)
@@ -290,6 +328,7 @@ function tokenizeWww(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function dot(code) {
     if (code === codes.dot) {
       effects.consume(code)
@@ -299,17 +338,22 @@ function tokenizeWww(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function after(code) {
     return code === codes.eof || markdownLineEnding(code) ? nok(code) : ok(code)
   }
 }
 
+/** @type {Tokenizer} */
 function tokenizeDomain(effects, ok, nok) {
+  /** @type {boolean|undefined} */
   let hasUnderscoreInLastSegment
+  /** @type {boolean|undefined} */
   let hasUnderscoreInLastLastSegment
 
   return domain
 
+  /** @type {State} */
   function domain(code) {
     if (code === codes.ampersand) {
       return effects.check(
@@ -341,6 +385,7 @@ function tokenizeDomain(effects, ok, nok) {
     return domain
   }
 
+  /** @type {State} */
   function punctuationContinuation(code) {
     if (code === codes.dot) {
       hasUnderscoreInLastLastSegment = hasUnderscoreInLastSegment
@@ -355,6 +400,7 @@ function tokenizeDomain(effects, ok, nok) {
     return domain
   }
 
+  /** @type {State} */
   function done(code) {
     if (!hasUnderscoreInLastLastSegment && !hasUnderscoreInLastSegment) {
       return ok(code)
@@ -364,11 +410,13 @@ function tokenizeDomain(effects, ok, nok) {
   }
 }
 
+/** @type {Tokenizer} */
 function tokenizePath(effects, ok) {
   let balance = 0
 
   return inPath
 
+  /** @type {State} */
   function inPath(code) {
     if (code === codes.ampersand) {
       return effects.check(
@@ -402,26 +450,31 @@ function tokenizePath(effects, ok) {
     return inPath
   }
 
+  /** @type {State} */
   function continuedPunctuation(code) {
     effects.consume(code)
     return inPath
   }
 
+  /** @type {State} */
   function parenAtPathEnd(code) {
     balance--
     return balance < 0 ? ok(code) : continuedPunctuation(code)
   }
 }
 
+/** @type {Tokenizer} */
 function tokenizeNamedCharacterReference(effects, ok, nok) {
   return start
 
+  /** @type {State} */
   function start(code) {
     assert(code === codes.ampersand, 'expected `&`')
     effects.consume(code)
     return inside
   }
 
+  /** @type {State} */
   function inside(code) {
     if (asciiAlpha(code)) {
       effects.consume(code)
@@ -436,6 +489,7 @@ function tokenizeNamedCharacterReference(effects, ok, nok) {
     return nok(code)
   }
 
+  /** @type {State} */
   function after(code) {
     // If the named character reference is followed by the end of the path, it’s
     // not continued punctuation.
@@ -443,15 +497,18 @@ function tokenizeNamedCharacterReference(effects, ok, nok) {
   }
 }
 
+/** @type {Tokenizer} */
 function tokenizePunctuation(effects, ok, nok) {
   return start
 
+  /** @type {State} */
   function start(code) {
     assert(trailingPunctuation(code), 'expected punctuation')
     effects.consume(code)
     return after
   }
 
+  /** @type {State} */
   function after(code) {
     // Check the next.
     if (trailingPunctuation(code)) {
@@ -465,6 +522,10 @@ function tokenizePunctuation(effects, ok, nok) {
   }
 }
 
+/**
+ * @param {Code} code
+ * @returns {boolean}
+ */
 function trailingPunctuation(code) {
   return (
     code === codes.exclamationMark ||
@@ -483,6 +544,10 @@ function trailingPunctuation(code) {
   )
 }
 
+/**
+ * @param {Code} code
+ * @returns {boolean}
+ */
 function pathEnd(code) {
   return (
     code === codes.eof ||
@@ -491,6 +556,10 @@ function pathEnd(code) {
   )
 }
 
+/**
+ * @param {Code} code
+ * @returns {boolean}
+ */
 function gfmAtext(code) {
   return (
     code === codes.plusSign ||
@@ -501,6 +570,7 @@ function gfmAtext(code) {
   )
 }
 
+/** @type {Previous} */
 function previousWww(code) {
   return (
     code === codes.eof ||
@@ -512,14 +582,20 @@ function previousWww(code) {
   )
 }
 
+/** @type {Previous} */
 function previousHttp(code) {
   return code === codes.eof || !asciiAlpha(code)
 }
 
+/** @type {Previous} */
 function previousEmail(code) {
   return code !== codes.slash && previousHttp(code)
 }
 
+/**
+ * @param {Event[]} events
+ * @returns {boolean|undefined}
+ */
 function previous(events) {
   let index = events.length
 
