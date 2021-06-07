@@ -1,22 +1,24 @@
-var fs = require('fs')
-var path = require('path')
-var test = require('tape')
-var micromark = require('micromark/lib')
-var syntax = require('../syntax')
-var html = require('../html')
+import fs from 'fs'
+import path from 'path'
+import test from 'tape'
+import {micromark} from 'micromark'
+import {
+  gfmAutolinkLiteral as syntax,
+  gfmAutolinkLiteralHtml as html
+} from '../index.js'
 
 test('markdown -> html (micromark)', function (t) {
-  var files = fs.readdirSync(__dirname).filter((d) => path.extname(d) === '.md')
+  var files = fs.readdirSync('test').filter((d) => path.extname(d) === '.md')
   var index = -1
 
   while (++index < files.length) {
     t.deepEqual(
-      micromark(fs.readFileSync(path.join(__dirname, files[index])), {
+      micromark(fs.readFileSync(path.join('test', files[index])), {
         extensions: [syntax],
         htmlExtensions: [html]
       }),
       fs.readFileSync(
-        path.join(__dirname, path.basename(files[index], '.md') + '.html'),
+        path.join('test', path.basename(files[index], '.md') + '.html'),
         'utf8'
       ),
       path.basename(files[index], '.md')

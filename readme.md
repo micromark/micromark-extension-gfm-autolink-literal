@@ -33,6 +33,9 @@ You probably should use this package with
 
 ## Install
 
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
+Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
+
 [npm][]:
 
 ```sh
@@ -41,12 +44,13 @@ npm install micromark-extension-gfm-autolink-literal
 
 ## API
 
-### `html`
+This package exports the following identifiers: `gfmAutolinkLiteral`,
+`gfmAutolinkLiteralHtml`.
+There is no default export.
 
-### `syntax`
+### `gfmAutolinkLiteralHtml`
 
-> Note: `syntax` is the default export of this module, `html` is available at
-> `micromark-extension-gfm-autolink-literal/html`.
+### `gfmAutolinkLiteral`
 
 Support [literal autolinks][].
 The exports are extensions for the micromark parser (to tokenize; can be passed
