@@ -1,11 +1,14 @@
+import assert from 'assert'
 import {
   asciiAlpha,
   asciiAlphanumeric,
   asciiControl,
+  markdownLineEndingOrSpace,
   markdownLineEnding,
   unicodePunctuation,
   unicodeWhitespace
 } from 'micromark-util-character'
+import {codes} from 'micromark-util-symbol/codes.js'
 
 const www = {tokenize: tokenizeWww, partial: true}
 const domain = {tokenize: tokenizeDomain, partial: true}
@@ -25,33 +28,24 @@ const text = {}
 // Export hooked constructs.
 export const gfmAutolinkLiteral = {text}
 
-// `0`
-let code = 48
+let code = codes.digit0
 
-// While the code is smaller than `{`.
-while (code < 123) {
+// Add alphanumerics.
+while (code < codes.leftCurlyBrace) {
   text[code] = emailAutolink
   code++
-  // Jump from `:` -> `A`
-  if (code === 58) code = 65
-  // Jump from `[` -> `a`
-  else if (code === 91) code = 97
+  if (code === codes.colon) code = codes.uppercaseA
+  else if (code === codes.leftSquareBracket) code = codes.lowercaseA
 }
 
-// `+`
-text[43] = emailAutolink
-// `-`
-text[45] = emailAutolink
-// `.`
-text[46] = emailAutolink
-// `_`
-text[95] = emailAutolink
-// `h`.
-text[72] = [emailAutolink, httpAutolink]
-text[104] = [emailAutolink, httpAutolink]
-// `w`.
-text[87] = [emailAutolink, wwwAutolink]
-text[119] = [emailAutolink, wwwAutolink]
+text[codes.plusSign] = emailAutolink
+text[codes.dash] = emailAutolink
+text[codes.dot] = emailAutolink
+text[codes.underscore] = emailAutolink
+text[codes.uppercaseH] = [emailAutolink, httpAutolink]
+text[codes.lowercaseH] = [emailAutolink, httpAutolink]
+text[codes.uppercaseW] = [emailAutolink, wwwAutolink]
+text[codes.lowercaseW] = [emailAutolink, wwwAutolink]
 
 function tokenizeEmailAutolink(effects, ok, nok) {
   const self = this
@@ -60,7 +54,6 @@ function tokenizeEmailAutolink(effects, ok, nok) {
   return start
 
   function start(code) {
-    /* istanbul ignore next - hooks. */
     if (
       !gfmAtext(code) ||
       !previousEmail(self.previous) ||
@@ -80,8 +73,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
       return atext
     }
 
-    // `@`
-    if (code === 64) {
+    if (code === codes.atSign) {
       effects.consume(code)
       return label
     }
@@ -90,17 +82,11 @@ function tokenizeEmailAutolink(effects, ok, nok) {
   }
 
   function label(code) {
-    // `.`
-    if (code === 46) {
+    if (code === codes.dot) {
       return effects.check(punctuation, done, dotContinuation)(code)
     }
 
-    if (
-      // `-`
-      code === 45 ||
-      // `_`
-      code === 95
-    ) {
+    if (code === codes.dash || code === codes.underscore) {
       return effects.check(punctuation, nok, dashOrUnderscoreContinuation)(code)
     }
 
@@ -124,8 +110,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
   }
 
   function afterDashOrUnderscore(code) {
-    // `.`
-    if (code === 46) {
+    if (code === codes.dot) {
       return effects.check(punctuation, nok, dotContinuation)(code)
     }
 
@@ -149,9 +134,8 @@ function tokenizeWwwAutolink(effects, ok, nok) {
   return start
 
   function start(code) {
-    /* istanbul ignore next - hooks. */
     if (
-      (code !== 87 && code - 32 !== 87) ||
+      (code !== codes.uppercaseW && code !== codes.lowercaseW) ||
       !previousWww(self.previous) ||
       previous(self.events)
     ) {
@@ -183,9 +167,8 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   return start
 
   function start(code) {
-    /* istanbul ignore next - hooks. */
     if (
-      (code !== 72 && code - 32 !== 72) ||
+      (code !== codes.uppercaseH && code !== codes.lowercaseH) ||
       !previousHttp(self.previous) ||
       previous(self.events)
     ) {
@@ -199,8 +182,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 
   function t1(code) {
-    // `t`
-    if (code === 84 || code - 32 === 84) {
+    if (code === codes.uppercaseT || code === codes.lowercaseT) {
       effects.consume(code)
       return t2
     }
@@ -209,8 +191,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 
   function t2(code) {
-    // `t`
-    if (code === 84 || code - 32 === 84) {
+    if (code === codes.uppercaseT || code === codes.lowercaseT) {
       effects.consume(code)
       return p
     }
@@ -219,8 +200,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 
   function p(code) {
-    // `p`
-    if (code === 80 || code - 32 === 80) {
+    if (code === codes.uppercaseP || code === codes.lowercaseP) {
       effects.consume(code)
       return s
     }
@@ -229,8 +209,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 
   function s(code) {
-    // `s`
-    if (code === 83 || code - 32 === 83) {
+    if (code === codes.uppercaseS || code === codes.lowercaseS) {
       effects.consume(code)
       return colon
     }
@@ -239,8 +218,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 
   function colon(code) {
-    // `:`
-    if (code === 58) {
+    if (code === codes.colon) {
       effects.consume(code)
       return slash1
     }
@@ -249,8 +227,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 
   function slash1(code) {
-    // `/`
-    if (code === 47) {
+    if (code === codes.slash) {
       effects.consume(code)
       return slash2
     }
@@ -259,8 +236,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 
   function slash2(code) {
-    // `/`
-    if (code === 47) {
+    if (code === codes.slash) {
       effects.consume(code)
       return after
     }
@@ -269,7 +245,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 
   function after(code) {
-    return code === null ||
+    return code === codes.eof ||
       asciiControl(code) ||
       unicodeWhitespace(code) ||
       unicodePunctuation(code)
@@ -288,14 +264,16 @@ function tokenizeWww(effects, ok, nok) {
   return start
 
   function start(code) {
-    // Assume a `w`.
+    assert(
+      code === codes.uppercaseW || code === codes.lowercaseW,
+      'expected `w`'
+    )
     effects.consume(code)
     return w2
   }
 
   function w2(code) {
-    // `w`
-    if (code === 87 || code - 32 === 87) {
+    if (code === codes.uppercaseW || code === codes.lowercaseW) {
       effects.consume(code)
       return w3
     }
@@ -304,8 +282,7 @@ function tokenizeWww(effects, ok, nok) {
   }
 
   function w3(code) {
-    // `w`
-    if (code === 87 || code - 32 === 87) {
+    if (code === codes.uppercaseW || code === codes.lowercaseW) {
       effects.consume(code)
       return dot
     }
@@ -314,8 +291,7 @@ function tokenizeWww(effects, ok, nok) {
   }
 
   function dot(code) {
-    // `.`
-    if (code === 46) {
+    if (code === codes.dot) {
       effects.consume(code)
       return after
     }
@@ -324,7 +300,7 @@ function tokenizeWww(effects, ok, nok) {
   }
 
   function after(code) {
-    return code === null || markdownLineEnding(code) ? nok(code) : ok(code)
+    return code === codes.eof || markdownLineEnding(code) ? nok(code) : ok(code)
   }
 }
 
@@ -335,8 +311,7 @@ function tokenizeDomain(effects, ok, nok) {
   return domain
 
   function domain(code) {
-    // `&`
-    if (code === 38) {
+    if (code === codes.ampersand) {
       return effects.check(
         namedCharacterReference,
         done,
@@ -344,7 +319,7 @@ function tokenizeDomain(effects, ok, nok) {
       )(code)
     }
 
-    if (code === 46 /* `.` */ || code === 95 /* `_` */) {
+    if (code === codes.dot || code === codes.underscore) {
       return effects.check(punctuation, done, punctuationContinuation)(code)
     }
 
@@ -354,10 +329,10 @@ function tokenizeDomain(effects, ok, nok) {
     // Instead of some new production for Unicode alphanumerics, markdown
     // already has that for Unicode punctuation and whitespace, so use those.
     if (
-      code === null ||
+      code === codes.eof ||
       asciiControl(code) ||
       unicodeWhitespace(code) ||
-      (code !== 45 /* `-` */ && unicodePunctuation(code))
+      (code !== codes.dash && unicodePunctuation(code))
     ) {
       return done(code)
     }
@@ -367,16 +342,14 @@ function tokenizeDomain(effects, ok, nok) {
   }
 
   function punctuationContinuation(code) {
-    // `.`
-    if (code === 46) {
+    if (code === codes.dot) {
       hasUnderscoreInLastLastSegment = hasUnderscoreInLastSegment
       hasUnderscoreInLastSegment = undefined
       effects.consume(code)
       return domain
     }
 
-    // `_`
-    if (code === 95) hasUnderscoreInLastSegment = true
+    if (code === codes.underscore) hasUnderscoreInLastSegment = true
 
     effects.consume(code)
     return domain
@@ -397,8 +370,7 @@ function tokenizePath(effects, ok) {
   return inPath
 
   function inPath(code) {
-    // `&`
-    if (code === 38) {
+    if (code === codes.ampersand) {
       return effects.check(
         namedCharacterReference,
         ok,
@@ -406,13 +378,11 @@ function tokenizePath(effects, ok) {
       )(code)
     }
 
-    // `(`
-    if (code === 40) {
+    if (code === codes.leftParenthesis) {
       balance++
     }
 
-    // `)`
-    if (code === 41) {
+    if (code === codes.rightParenthesis) {
       return effects.check(
         punctuation,
         parenAtPathEnd,
@@ -447,7 +417,7 @@ function tokenizeNamedCharacterReference(effects, ok, nok) {
   return start
 
   function start(code) {
-    // Assume an ampersand.
+    assert(code === codes.ampersand, 'expected `&`')
     effects.consume(code)
     return inside
   }
@@ -458,8 +428,7 @@ function tokenizeNamedCharacterReference(effects, ok, nok) {
       return inside
     }
 
-    // `;`
-    if (code === 59) {
+    if (code === codes.semicolon) {
       effects.consume(code)
       return after
     }
@@ -478,7 +447,7 @@ function tokenizePunctuation(effects, ok, nok) {
   return start
 
   function start(code) {
-    // Always a valid trailing punctuation marker.
+    assert(trailingPunctuation(code), 'expected punctuation')
     effects.consume(code)
     return after
   }
@@ -498,76 +467,57 @@ function tokenizePunctuation(effects, ok, nok) {
 
 function trailingPunctuation(code) {
   return (
-    // `!`
-    code === 33 ||
-    // `"`
-    code === 34 ||
-    // `'`
-    code === 39 ||
-    // `)`
-    code === 41 ||
-    // `*`
-    code === 42 ||
-    // `,`
-    code === 44 ||
-    // `.`
-    code === 46 ||
-    // `:`
-    code === 58 ||
-    // `;`
-    code === 59 ||
-    // `<`
-    code === 60 ||
-    // `?`
-    code === 63 ||
-    // `_`.
-    code === 95 ||
-    // `~`
-    code === 126
+    code === codes.exclamationMark ||
+    code === codes.quotationMark ||
+    code === codes.apostrophe ||
+    code === codes.rightParenthesis ||
+    code === codes.asterisk ||
+    code === codes.comma ||
+    code === codes.dot ||
+    code === codes.colon ||
+    code === codes.semicolon ||
+    code === codes.lessThan ||
+    code === codes.questionMark ||
+    code === codes.underscore ||
+    code === codes.tilde
   )
 }
 
 function pathEnd(code) {
   return (
-    // EOF.
-    code === null ||
-    // CR, LF, CRLF, HT, VS.
-    code < 0 ||
-    // Space.
-    code === 32 ||
-    // `<`
-    code === 60
+    code === codes.eof ||
+    code === codes.lessThan ||
+    markdownLineEndingOrSpace(code)
   )
 }
 
 function gfmAtext(code) {
   return (
-    code === 43 /* `+` */ ||
-    code === 45 /* `-` */ ||
-    code === 46 /* `.` */ ||
-    code === 95 /* `_` */ ||
+    code === codes.plusSign ||
+    code === codes.dash ||
+    code === codes.dot ||
+    code === codes.underscore ||
     asciiAlphanumeric(code)
   )
 }
 
 function previousWww(code) {
   return (
-    code === null ||
-    code < 0 ||
-    code === 32 /* ` ` */ ||
-    code === 40 /* `(` */ ||
-    code === 42 /* `*` */ ||
-    code === 95 /* `_` */ ||
-    code === 126 /* `~` */
+    code === codes.eof ||
+    code === codes.leftParenthesis ||
+    code === codes.asterisk ||
+    code === codes.underscore ||
+    code === codes.tilde ||
+    markdownLineEndingOrSpace(code)
   )
 }
 
 function previousHttp(code) {
-  return code === null || !asciiAlpha(code)
+  return code === codes.eof || !asciiAlpha(code)
 }
 
 function previousEmail(code) {
-  return code !== 47 /* `/` */ && previousHttp(code)
+  return code !== codes.slash && previousHttp(code)
 }
 
 function previous(events) {
