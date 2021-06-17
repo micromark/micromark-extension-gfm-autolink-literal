@@ -169,5 +169,44 @@ test('markdown -> html (micromark)', (t) => {
     'should support two closing parens in a path'
   )
 
+  t.deepEqual(
+    micromark('ftp://a/b/c.txt', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p>ftp://a/b/c.txt</p>',
+    'should not support ftp links'
+  )
+
+  // Note: GH comments/issues/PRs do not link this, but Gists/readmes do.
+  // To do: Astrals in micromark.
+  t.skip(
+    // .
+    // micromark('，www.example.com', {
+    //   extensions: [syntax],
+    //   htmlExtensions: [html]
+    // }),
+    // '<p>，<a href="http://www.example.com">www.example.com</a></p>',
+    'should support www links after Unicode punctuation'
+  )
+
+  t.deepEqual(
+    micromark('，https://example.com', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p>，<a href="https://example.com">https://example.com</a></p>',
+    'should support http links after Unicode punctuation'
+  )
+
+  t.deepEqual(
+    micromark('，example@example.com', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p>，<a href="mailto:example@example.com">example@example.com</a></p>',
+    'should support email links after Unicode punctuation'
+  )
+
   t.end()
 })
