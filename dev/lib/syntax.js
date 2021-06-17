@@ -74,7 +74,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
     if (
       !gfmAtext(code) ||
       !previousEmail(self.previous) ||
-      previous(self.events)
+      previousUnbalanced(self.events)
     ) {
       return nok(code)
     }
@@ -167,7 +167,7 @@ function tokenizeWwwAutolink(effects, ok, nok) {
     if (
       (code !== codes.uppercaseW && code !== codes.lowercaseW) ||
       !previousWww(self.previous) ||
-      previous(self.events)
+      previousUnbalanced(self.events)
     ) {
       return nok(code)
     }
@@ -203,7 +203,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
     if (
       (code !== codes.uppercaseH && code !== codes.lowercaseH) ||
       !previousHttp(self.previous) ||
-      previous(self.events)
+      previousUnbalanced(self.events)
     ) {
       return nok(code)
     }
@@ -605,18 +605,36 @@ function previousEmail(code) {
 
 /**
  * @param {Event[]} events
- * @returns {boolean|undefined}
+ * @returns {boolean}
  */
-function previous(events) {
+function previousUnbalanced(events) {
   let index = events.length
+  let result = false
 
   while (index--) {
+    const token = events[index][1]
+
     if (
-      (events[index][1].type === 'labelLink' ||
-        events[index][1].type === 'labelImage') &&
-      !events[index][1]._balanced
+      (token.type === 'labelLink' || token.type === 'labelImage') &&
+      !token._balanced
     ) {
-      return true
+      result = true
+      break
+    }
+
+    // @ts-expect-error If we’ve seen this token, and it was marked as not
+    // having any unbalanced bracket before it, we can exit.
+    if (token._gfmAutolinkLiteralWalkedInto) {
+      result = false
+      break
     }
   }
+
+  if (events.length > 0 && !result) {
+    // @ts-expect-error Mark the last token as “walked into” w/o finding
+    // anything.
+    events[events.length - 1][1]._gfmAutolinkLiteralWalkedInto = true
+  }
+
+  return result
 }
