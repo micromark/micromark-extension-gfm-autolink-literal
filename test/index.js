@@ -208,5 +208,14 @@ test('markdown -> html (micromark)', (t) => {
     'should support email links after Unicode punctuation'
   )
 
+  t.deepEqual(
+    micromark('http&#x3A;//user:password@host:port/path?key=value#fragment', {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    }),
+    '<p>http://user:password@host:port/path?key=value#fragment</p>',
+    'should not link character reference for `:`'
+  )
+
   t.end()
 })
