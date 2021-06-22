@@ -1,6 +1,6 @@
 {
   "name": "micromark-extension-gfm-autolink-literal",
-  "version": "0.5.7",
+  "version": "1.0.0",
   "description": "micromark extension to support GFM autolink literals",
   "license": "MIT",
   "keywords": [
