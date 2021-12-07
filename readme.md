@@ -11,9 +11,11 @@
 **[micromark][]** extension to support GitHub flavored markdown (GFM) [literal
 autolinks][].
 
-This syntax extension matches the GFM spec and how literal autolinks work
-in several places on github.com.
-GitHub employs two algorithms to autolink: one at parse time and one at
+## What is this?
+
+This package is a micromark extension to add support for GFM literal autolinks.
+
+GitHub employs different algorithms to autolink: one at parse time and one at
 transform time (similar to how @mentions are done at transform time).
 This difference can be observed because character references and escapes are
 handled differently.
@@ -21,26 +23,46 @@ But also because issues/PRs/comments omit (perhaps by accident?) the second
 algorithm for `www.`, `http://`, and `https://` links (but not for email links).
 
 As this is a syntax extension, it focuses on the first algorithm.
-The `html` part of this extension does not operate on an AST and hence can’t
-perform the second algorithm.
-[`mdast-util-gfm-autolink-literal`][mdast-util-gfm-autolink-literal] adds
-support for the second.
+The second algorithm is performed by
+[`mdast-util-gfm-autolink-literal`][mdast-autolink-literal].
+The `html` part of this micromark extension does not operate on an AST and hence
+can’t perform the second algorithm.
 
 ## When to use this
 
-You should probably use [`micromark-extension-gfm`][micromark-extension-gfm],
-which combines this package with other GFM features, instead.
-Alternatively, if you don’t want all of GFM, use this package.
+In many cases, when working with micromark, you’d want to use
+[`micromark-extension-gfm`][micromark-extension-gfm] instead, which combines
+this package with other GFM features.
+
+When working with syntax trees, you’d want to combine this package with
+[`mdast-util-gfm-autolink-literal`][mdast-autolink-literal] (or
+[`mdast-util-gfm`][mdast-util-gfm] when using `micromark-extension-gfm`).
+
+These tools are all rather low-level.
+In most cases, you’d instead want to use [`remark-gfm`][remark-gfm] with
+[remark][].
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
-Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
-
-[npm][]:
+This package is [ESM only][esm].
+In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
 
 ```sh
 npm install micromark-extension-gfm-autolink-literal
+```
+
+In Deno with [Skypack][]:
+
+```js
+import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://cdn.skypack.dev/micromark-extension-gfm-autolink-literal@1?dts'
+```
+
+In browsers with [Skypack][]:
+
+```html
+<script type="module">
+  import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://cdn.skypack.dev/micromark-extension-gfm-autolink-literal@1?min'
+</script>
 ```
 
 ## Use
@@ -79,30 +101,36 @@ Without this condition, production code is loaded.
 
 ### `gfmAutolinkLiteral`
 
+An extension for micromark to parse GFM autolink literals (can be passed in
+`extensions`).
+
 ### `gfmAutolinkLiteralHtml`
 
-An extension for the micromark parser (to parse; can be passed in
-`extensions`) and one for the HTML compiler (to compile as `<a>` elements; can
-be passed in `htmlExtensions`).
+An extension to compile them to HTML (can be passed in `htmlExtensions`).
+
+## Types
+
+This package is fully typed with [TypeScript][].
+There are no additional exported types.
+
+## Compatibility
+
+This package is at least compatible with all maintained versions of Node.js.
+As of now, that is Node.js 12.20+, 14.14+, and 16.0+.
+It also works in Deno and modern browsers.
+
+## Security
+
+This package is safe.
 
 ## Related
 
-*   [`remarkjs/remark`][remark]
-    — markdown processor powered by plugins
-*   [`remarkjs/remark-gfm`](https://github.com/remarkjs/remark-gfm)
-    — remark plugin using this and other GFM features
-*   [`micromark/micromark`][micromark]
-    — the smallest commonmark-compliant markdown parser that exists
-*   [`micromark/micromark-extension-gfm`][micromark-extension-gfm]
-    — micromark extension combining this with other GFM features
-*   [`syntax-tree/mdast-util-gfm-autolink-literal`](https://github.com/syntax-tree/mdast-util-gfm-autolink-literal)
-    — mdast utility to support autolink literals
-*   [`syntax-tree/mdast-util-gfm`](https://github.com/syntax-tree/mdast-util-gfm)
-    — mdast utility to support GFM
-*   [`syntax-tree/mdast-util-from-markdown`][from-markdown]
-    — mdast parser using `micromark` to create mdast from markdown
-*   [`syntax-tree/mdast-util-to-markdown`][to-markdown]
-    — mdast serializer to create markdown from mdast
+*   [`syntax-tree/mdast-util-gfm-autolink-literal`][mdast-autolink-literal]
+    — support GFM autolink literals in mdast
+*   [`syntax-tree/mdast-util-gfm`][mdast-util-gfm]
+    — support GFM in mdast
+*   [`remarkjs/remark-gfm`][remark-gfm]
+    — support GFM in remark
 
 ## Contribute
 
@@ -148,6 +176,8 @@ abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
+[skypack]: https://www.skypack.dev
+
 [license]: license
 
 [author]: https://wooorm.com
@@ -158,16 +188,20 @@ abide by its terms.
 
 [coc]: https://github.com/micromark/.github/blob/HEAD/code-of-conduct.md
 
+[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+
+[typescript]: https://www.typescriptlang.org
+
 [micromark]: https://github.com/micromark/micromark
-
-[from-markdown]: https://github.com/syntax-tree/mdast-util-from-markdown
-
-[to-markdown]: https://github.com/syntax-tree/mdast-util-to-markdown
 
 [remark]: https://github.com/remarkjs/remark
 
-[mdast-util-gfm-autolink-literal]: https://github.com/syntax-tree/mdast-util-gfm-autolink-literal
+[micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
+
+[mdast-autolink-literal]: https://github.com/syntax-tree/mdast-util-gfm-autolink-literal
+
+[mdast-util-gfm]: https://github.com/syntax-tree/mdast-util-gfm
+
+[remark-gfm]: https://github.com/remarkjs/remark-gfm
 
 [literal autolinks]: https://github.github.com/gfm/#autolinks-extension-
-
-[micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm

@@ -604,7 +604,7 @@ function previousEmail(code) {
 }
 
 /**
- * @param {Event[]} events
+ * @param {Array<Event>} events
  * @returns {boolean}
  */
 function previousUnbalanced(events) {
