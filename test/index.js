@@ -1,30 +1,16 @@
+import {URL} from 'node:url'
 import fs from 'fs'
 import path from 'path'
 import test from 'tape'
 import {micromark} from 'micromark'
+import {rehype} from 'rehype'
+import {createGfmFixtures} from 'create-gfm-fixtures'
 import {
   gfmAutolinkLiteral as syntax,
   gfmAutolinkLiteralHtml as html
 } from '../dev/index.js'
 
 test('markdown -> html (micromark)', (t) => {
-  const files = fs.readdirSync('test').filter((d) => path.extname(d) === '.md')
-  let index = -1
-
-  while (++index < files.length) {
-    t.deepEqual(
-      micromark(fs.readFileSync(path.join('test', files[index])), {
-        extensions: [syntax],
-        htmlExtensions: [html]
-      }),
-      fs.readFileSync(
-        path.join('test', path.basename(files[index], '.md') + '.html'),
-        'utf8'
-      ),
-      path.basename(files[index], '.md')
-    )
-  }
-
   t.deepEqual(
     micromark('www.a.)', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a">www.a</a>.)</p>',
@@ -216,6 +202,62 @@ test('markdown -> html (micromark)', (t) => {
     '<p>http://user:password@host:port/path?key=value#fragment</p>',
     'should not link character reference for `:`'
   )
+
+  t.end()
+})
+
+test('fixtures', async (t) => {
+  const base = new URL('fixtures/', import.meta.url)
+
+  await createGfmFixtures(base)
+
+  const files = fs.readdirSync(base).filter((d) => /\.md$/.test(d))
+  let index = -1
+
+  while (++index < files.length) {
+    const name = path.basename(files[index], '.md')
+    const input = fs.readFileSync(new URL(name + '.md', base))
+    let expected = String(fs.readFileSync(new URL(name + '.html', base)))
+    let actual = micromark(input, {
+      extensions: [syntax],
+      htmlExtensions: [html]
+    })
+
+    // Format the character references.
+    actual = String(
+      await rehype()
+        .use({settings: {fragment: true}})
+        .process(actual)
+    )
+
+    // GH replaces some control codes.
+    actual = actual.replace(/[\u001F\u0085]/g, '�')
+
+    // GH strips images that point to just a search or hash.
+    actual = actual.replace(/src="[?#][^"]*"/g, 'src=""')
+
+    // GH doesn’t “fix” the percent-encoding of percentages.
+    expected = expected.replace(/%">/g, '%25">')
+
+    // We’re using GHs algo on comments to compare, but we don’t want hard
+    // breaks.
+    expected = expected.replace(/<br>\n/g, '\n')
+
+    // GH, on comments, does not support algo 2 for www, http, and https links.
+    // But it *does* support them for mailto links.
+    // We can’t do algo 2 because that requires an AST, so revert the mailto.
+    if (
+      name === 'combined-with-images.comment' ||
+      name === 'combined-with-links.comment'
+    ) {
+      expected = expected.replace(
+        /\[<a href="mailto:a@b\.c">a@b\.c<\/a>/g,
+        '[a@b.c'
+      )
+    }
+
+    t.deepEqual(actual, expected, name)
+  }
 
   t.end()
 })

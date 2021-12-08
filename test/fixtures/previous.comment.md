@@ -65,7 +65,9 @@ github.com: !a@b.c, "a@b.c, #a@b.c, $a@b.c, &a@b.c, 'a@b.c, )a@b.c, +a@b.c,
 ,a@b.c, -a@b.c, .a@b.c, /a@b.c, :a@b.c, ;a@b.c, <a@b.c, =a@b.c, >a@b.c, ?a@b.c,
 @a@b.c, \a@b.c, ]a@b.c, ^a@b.c, `a@b.c, {a@b.c, }a@b.c.
 
-## remarkjs/remark#678
+## Commas
+
+See `https://github.com/remarkjs/remark/discussions/678`.
 
 ,https://github.com
 
