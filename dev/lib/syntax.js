@@ -595,12 +595,15 @@ function previousWww(code) {
 
 /** @type {Previous} */
 function previousHttp(code) {
-  return code === codes.eof || (!asciiAlpha(code) && code !== codes.equalsTo && code !== codes.greaterThan)
+  return (
+    code === codes.eof ||
+    (!asciiAlpha(code) && code !== codes.equalsTo && code !== codes.greaterThan)
+  )
 }
 
 /** @type {Previous} */
 function previousEmail(code) {
-  return code !== codes.slash && previousHttp(code)
+  return code !== codes.slash && (code === codes.eof || !asciiAlpha(code))
 }
 
 /**
