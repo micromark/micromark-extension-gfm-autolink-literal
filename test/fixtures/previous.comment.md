@@ -17,6 +17,10 @@ Can start after underscore *_https://a.b.
 
 Can start after tilde ~https://a.b.
 
+Cannot start after greater than >http://www.example.com
+
+Cannot start after equals sign =http://www.example.com
+
 # www
 
 www.a.b can start after EOF
