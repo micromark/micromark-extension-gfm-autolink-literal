@@ -595,7 +595,7 @@ function previousWww(code) {
 
 /** @type {Previous} */
 function previousHttp(code) {
-  return code === codes.eof || !asciiAlpha(code)
+  return code === codes.eof || (!asciiAlpha(code) && code !== codes.equalsTo && code !== codes.greaterThan)
 }
 
 /** @type {Previous} */
