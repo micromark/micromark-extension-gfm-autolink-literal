@@ -51,17 +51,17 @@ In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
 npm install micromark-extension-gfm-autolink-literal
 ```
 
-In Deno with [Skypack][]:
+In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://cdn.skypack.dev/micromark-extension-gfm-autolink-literal@1?dts'
+import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://esm.sh/micromark-extension-gfm-autolink-literal@1'
 ```
 
-In browsers with [Skypack][]:
+In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://cdn.skypack.dev/micromark-extension-gfm-autolink-literal@1?min'
+  import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://esm.sh/micromark-extension-gfm-autolink-literal@1?bundle'
 </script>
 ```
 
@@ -176,7 +176,7 @@ abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
-[skypack]: https://www.skypack.dev
+[esmsh]: https://esm.sh
 
 [license]: license
 
