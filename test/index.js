@@ -1,6 +1,6 @@
 import {URL} from 'node:url'
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import test from 'tape'
 import {micromark} from 'micromark'
 import {rehype} from 'rehype'
@@ -211,13 +211,28 @@ test('fixtures', async (t) => {
 
   await createGfmFixtures(base)
 
-  const files = fs.readdirSync(base).filter((d) => /\.md$/.test(d))
+  const allFiles = await fs.readdir(base)
+  const files = allFiles.filter((d) => /\.md$/.test(d))
+
+  t.plan(files.length)
+
   let index = -1
 
   while (++index < files.length) {
-    const name = path.basename(files[index], '.md')
-    const input = fs.readFileSync(new URL(name + '.md', base))
-    let expected = String(fs.readFileSync(new URL(name + '.html', base)))
+    testOne(t, files[index])
+  }
+})
+
+/**
+ * @param {import('tape').Test} t
+ * @param {string} basename
+ */
+function testOne(t, basename) {
+  const base = new URL('fixtures/', import.meta.url)
+  const name = path.basename(basename, '.md')
+  t.test(basename, async (t) => {
+    const input = await fs.readFile(new URL(name + '.md', base))
+    let expected = String(await fs.readFile(new URL(name + '.html', base)))
     let actual = micromark(input, {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -231,6 +246,7 @@ test('fixtures', async (t) => {
     )
 
     // GH replaces some control codes.
+    // eslint-disable-next-line no-control-regex
     actual = actual.replace(/[\u001F\u0085]/g, '�')
 
     // GH strips images that point to just a search or hash.
@@ -257,7 +273,5 @@ test('fixtures', async (t) => {
     }
 
     t.deepEqual(actual, expected, name)
-  }
-
-  t.end()
-})
+  })
+}
