@@ -112,7 +112,7 @@ This package exports the identifiers `gfmAutolinkLiteral` and
 `gfmAutolinkLiteralHtml`.
 There is no default export.
 
-The export map supports the endorsed [`development` condition][condition]).
+The export map supports the endorsed [`development` condition][condition].
 Run `node --conditions development module.js` to get instrumented dev code.
 Without this condition, production code is loaded.
 
