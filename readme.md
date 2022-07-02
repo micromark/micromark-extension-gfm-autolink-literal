@@ -8,7 +8,7 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-[micromark][] extension support GFM [literal autolinks][spec].
+[micromark][] extension to support GFM [literal autolinks][spec].
 
 ## Contents
 
