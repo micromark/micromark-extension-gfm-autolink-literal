@@ -1,5 +1,6 @@
+import assert from 'node:assert/strict'
 import fs from 'node:fs/promises'
-import test from 'tape'
+import test from 'node:test'
 import {micromark} from 'micromark'
 import {rehype} from 'rehype'
 import {createGfmFixtures} from 'create-gfm-fixtures'
@@ -8,32 +9,32 @@ import {
   gfmAutolinkLiteralHtml as html
 } from '../dev/index.js'
 
-test('markdown -> html (micromark)', (t) => {
-  t.deepEqual(
+test('markdown -> html (micromark)', () => {
+  assert.deepEqual(
     micromark('www.a.)', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a">www.a</a>.)</p>',
     'should support a closing paren at TLD'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.a b', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a">www.a</a> b</p>',
     'should support a no TLD'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.a/b c', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a/b">www.a/b</a> c</p>',
     'should support a path instead of TLD'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.�a', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.%EF%BF%BDa">www.�a</a></p>',
     'should support a replacement character in a domain'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('http://點看.com', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -42,7 +43,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support non-ascii characters in a domain (http)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('點看@example.com', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -51,7 +52,7 @@ test('markdown -> html (micromark)', (t) => {
     'should *not* support non-ascii characters in atext (email)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('example@點看.com', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -60,43 +61,43 @@ test('markdown -> html (micromark)', (t) => {
     'should *not* support non-ascii characters in a domain (email)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.點看.com', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.%E9%BB%9E%E7%9C%8B.com">www.點看.com</a></p>',
     'should support non-ascii characters in a domain (www)'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.a.com/點看', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a.com/%E9%BB%9E%E7%9C%8B">www.a.com/點看</a></p>',
     'should support non-ascii characters in a path'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.-a.b', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.-a.b">www.-a.b</a></p>',
     'should support a dash to start a domain'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.$', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.$">www.$</a></p>',
     'should support a dollar as a domain name'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.a..b.c', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a..b.c">www.a..b.c</a></p>',
     'should support adjacent dots in a domain name'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('www.a&a;', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="http://www.a">www.a</a>&amp;a;</p>',
     'should support named character references in domains'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('https://a.bc/d/e/).', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -105,7 +106,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a closing paren and period after a path'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('https://a.bc/d/e/.)', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -114,19 +115,19 @@ test('markdown -> html (micromark)', (t) => {
     'should support a period and closing paren after a path'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('https://a.bc).', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="https://a.bc">https://a.bc</a>).</p>',
     'should support a closing paren and period after a domain'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('https://a.bc.)', {extensions: [syntax], htmlExtensions: [html]}),
     '<p><a href="https://a.bc">https://a.bc</a>.)</p>',
     'should support a period and closing paren after a domain'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('https://a.bc).d', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -135,7 +136,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a closing paren and period in a path'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('https://a.bc.)d', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -144,7 +145,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support a period and closing paren in a path'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('https://a.bc/))d', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -153,7 +154,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support two closing parens in a path'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('ftp://a/b/c.txt', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -164,17 +165,16 @@ test('markdown -> html (micromark)', (t) => {
 
   // Note: GH comments/issues/PRs do not link this, but Gists/readmes do.
   // To do: Astrals in micromark.
-  t.skip(
-    // .
-    // micromark('，www.example.com', {
-    //   extensions: [syntax],
-    //   htmlExtensions: [html]
-    // }),
-    // '<p>，<a href="http://www.example.com">www.example.com</a></p>',
-    'should support www links after Unicode punctuation'
-  )
+  // assert.deepEqual(
+  //   micromark('，www.example.com', {
+  //     extensions: [syntax],
+  //     htmlExtensions: [html]
+  //   }),
+  //   '<p>，<a href="http://www.example.com">www.example.com</a></p>',
+  //   'should support www links after Unicode punctuation'
+  // )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('，https://example.com', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -183,7 +183,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support http links after Unicode punctuation'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('，example@example.com', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -192,7 +192,7 @@ test('markdown -> html (micromark)', (t) => {
     'should support email links after Unicode punctuation'
   )
 
-  t.deepEqual(
+  assert.deepEqual(
     micromark('http&#x3A;//user:password@host:port/path?key=value#fragment', {
       extensions: [syntax],
       htmlExtensions: [html]
@@ -200,11 +200,9 @@ test('markdown -> html (micromark)', (t) => {
     '<p>http://user:password@host:port/path?key=value#fragment</p>',
     'should not link character reference for `:`'
   )
-
-  t.end()
 })
 
-test('fixtures', async (t) => {
+test('fixtures', async () => {
   const base = new URL('fixtures/', import.meta.url)
 
   await createGfmFixtures(base)
@@ -263,8 +261,6 @@ test('fixtures', async (t) => {
       )
     }
 
-    t.deepEqual(actual, expected, name)
+    assert.deepEqual(actual, expected, name)
   }
-
-  t.end()
 })
