@@ -1,7 +1,7 @@
 /**
- * @typedef {import('micromark-util-types').HtmlExtension} HtmlExtension
- * @typedef {import('micromark-util-types').Handle} Handle
  * @typedef {import('micromark-util-types').CompileContext} CompileContext
+ * @typedef {import('micromark-util-types').Handle} Handle
+ * @typedef {import('micromark-util-types').HtmlExtension} HtmlExtension
  * @typedef {import('micromark-util-types').Token} Token
  */
 
@@ -39,7 +39,7 @@ function literalAutolinkHttp(token) {
 /**
  * @this CompileContext
  * @param {Token} token
- * @param {string} [protocol]
+ * @param {string | null | undefined} [protocol]
  * @returns {void}
  */
 function anchorFromToken(token, protocol) {
