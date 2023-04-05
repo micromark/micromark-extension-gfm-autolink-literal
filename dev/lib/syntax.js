@@ -38,7 +38,14 @@ const emailAutolink = {tokenize: tokenizeEmailAutolink, previous: previousEmail}
 /** @type {ConstructRecord} */
 const text = {}
 
-/** @type {Extension} */
+// To do: next major: expose functions that yields extension.
+
+/**
+ * Extension for `micromark` that can be passed in `extensions` to enable GFM
+ * autolink literal syntax.
+ *
+ * @type {Extension}
+ */
 export const gfmAutolinkLiteral = {text}
 
 let code = codes.digit0
