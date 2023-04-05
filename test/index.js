@@ -5,39 +5,61 @@ import {micromark} from 'micromark'
 import {rehype} from 'rehype'
 import {createGfmFixtures} from 'create-gfm-fixtures'
 import {
-  gfmAutolinkLiteral as syntax,
-  gfmAutolinkLiteralHtml as html
-} from '../dev/index.js'
+  gfmAutolinkLiteral,
+  gfmAutolinkLiteralHtml
+} from 'micromark-extension-gfm-autolink-literal'
+
+test('core', async () => {
+  assert.deepEqual(
+    Object.keys(
+      await import('micromark-extension-gfm-autolink-literal')
+    ).sort(),
+    ['gfmAutolinkLiteral', 'gfmAutolinkLiteralHtml'],
+    'should expose the public api'
+  )
+})
 
 test('markdown -> html (micromark)', () => {
   assert.deepEqual(
-    micromark('www.a.)', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.a.)', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.a">www.a</a>.)</p>',
     'should support a closing paren at TLD'
   )
 
   assert.deepEqual(
-    micromark('www.a b', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.a b', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.a">www.a</a> b</p>',
     'should support a no TLD'
   )
 
   assert.deepEqual(
-    micromark('www.a/b c', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.a/b c', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.a/b">www.a/b</a> c</p>',
     'should support a path instead of TLD'
   )
 
   assert.deepEqual(
-    micromark('www.�a', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.�a', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.%EF%BF%BDa">www.�a</a></p>',
     'should support a replacement character in a domain'
   )
 
   assert.deepEqual(
     micromark('http://點看.com', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p><a href="http://%E9%BB%9E%E7%9C%8B.com">http://點看.com</a></p>',
     'should support non-ascii characters in a domain (http)'
@@ -45,8 +67,8 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('點看@example.com', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p>點看@example.com</p>',
     'should *not* support non-ascii characters in atext (email)'
@@ -54,53 +76,71 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('example@點看.com', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p>example@點看.com</p>',
     'should *not* support non-ascii characters in a domain (email)'
   )
 
   assert.deepEqual(
-    micromark('www.點看.com', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.點看.com', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.%E9%BB%9E%E7%9C%8B.com">www.點看.com</a></p>',
     'should support non-ascii characters in a domain (www)'
   )
 
   assert.deepEqual(
-    micromark('www.a.com/點看', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.a.com/點看', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.a.com/%E9%BB%9E%E7%9C%8B">www.a.com/點看</a></p>',
     'should support non-ascii characters in a path'
   )
 
   assert.deepEqual(
-    micromark('www.-a.b', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.-a.b', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.-a.b">www.-a.b</a></p>',
     'should support a dash to start a domain'
   )
 
   assert.deepEqual(
-    micromark('www.$', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.$', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.$">www.$</a></p>',
     'should support a dollar as a domain name'
   )
 
   assert.deepEqual(
-    micromark('www.a..b.c', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.a..b.c', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.a..b.c">www.a..b.c</a></p>',
     'should support adjacent dots in a domain name'
   )
 
   assert.deepEqual(
-    micromark('www.a&a;', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('www.a&a;', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="http://www.a">www.a</a>&amp;a;</p>',
     'should support named character references in domains'
   )
 
   assert.deepEqual(
     micromark('https://a.bc/d/e/).', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p><a href="https://a.bc/d/e/">https://a.bc/d/e/</a>).</p>',
     'should support a closing paren and period after a path'
@@ -108,29 +148,35 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('https://a.bc/d/e/.)', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p><a href="https://a.bc/d/e/">https://a.bc/d/e/</a>.)</p>',
     'should support a period and closing paren after a path'
   )
 
   assert.deepEqual(
-    micromark('https://a.bc).', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('https://a.bc).', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="https://a.bc">https://a.bc</a>).</p>',
     'should support a closing paren and period after a domain'
   )
 
   assert.deepEqual(
-    micromark('https://a.bc.)', {extensions: [syntax], htmlExtensions: [html]}),
+    micromark('https://a.bc.)', {
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
+    }),
     '<p><a href="https://a.bc">https://a.bc</a>.)</p>',
     'should support a period and closing paren after a domain'
   )
 
   assert.deepEqual(
     micromark('https://a.bc).d', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p><a href="https://a.bc).d">https://a.bc).d</a></p>',
     'should support a closing paren and period in a path'
@@ -138,8 +184,8 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('https://a.bc.)d', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p><a href="https://a.bc.)d">https://a.bc.)d</a></p>',
     'should support a period and closing paren in a path'
@@ -147,8 +193,8 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('https://a.bc/))d', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p><a href="https://a.bc/))d">https://a.bc/))d</a></p>',
     'should support two closing parens in a path'
@@ -156,8 +202,8 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('ftp://a/b/c.txt', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p>ftp://a/b/c.txt</p>',
     'should not support ftp links'
@@ -167,8 +213,8 @@ test('markdown -> html (micromark)', () => {
   // To do: Astrals in micromark.
   // assert.deepEqual(
   //   micromark('，www.example.com', {
-  //     extensions: [syntax],
-  //     htmlExtensions: [html]
+  //     extensions: [gfmAutolinkLiteral],
+  //     htmlExtensions: [gfmAutolinkLiteralHtml]
   //   }),
   //   '<p>，<a href="http://www.example.com">www.example.com</a></p>',
   //   'should support www links after Unicode punctuation'
@@ -176,8 +222,8 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('，https://example.com', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p>，<a href="https://example.com">https://example.com</a></p>',
     'should support http links after Unicode punctuation'
@@ -185,8 +231,8 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('，example@example.com', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p>，<a href="mailto:example@example.com">example@example.com</a></p>',
     'should support email links after Unicode punctuation'
@@ -194,8 +240,8 @@ test('markdown -> html (micromark)', () => {
 
   assert.deepEqual(
     micromark('http&#x3A;//user:password@host:port/path?key=value#fragment', {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     }),
     '<p>http://user:password@host:port/path?key=value#fragment</p>',
     'should not link character reference for `:`'
@@ -223,8 +269,8 @@ test('fixtures', async () => {
     const input = await fs.readFile(new URL(name + '.md', base))
     let expected = String(await fs.readFile(new URL(name + '.html', base)))
     let actual = micromark(input, {
-      extensions: [syntax],
-      htmlExtensions: [html]
+      extensions: [gfmAutolinkLiteral],
+      htmlExtensions: [gfmAutolinkLiteralHtml]
     })
 
     // Format the character references.
