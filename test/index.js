@@ -1,6 +1,4 @@
-import {URL} from 'node:url'
 import fs from 'node:fs/promises'
-import path from 'node:path'
 import test from 'tape'
 import {micromark} from 'micromark'
 import {rehype} from 'rehype'
@@ -211,26 +209,19 @@ test('fixtures', async (t) => {
 
   await createGfmFixtures(base)
 
-  const allFiles = await fs.readdir(base)
-  const files = allFiles.filter((d) => /\.md$/.test(d))
-
-  t.plan(files.length)
+  const files = await fs.readdir(base)
+  const extname = '.md'
 
   let index = -1
 
   while (++index < files.length) {
-    testOne(t, files[index])
-  }
-})
+    const d = files[index]
 
-/**
- * @param {import('tape').Test} t
- * @param {string} basename
- */
-function testOne(t, basename) {
-  const base = new URL('fixtures/', import.meta.url)
-  const name = path.basename(basename, '.md')
-  t.test(basename, async (t) => {
+    if (!d.endsWith(extname)) {
+      continue
+    }
+
+    const name = d.slice(0, -extname.length)
     const input = await fs.readFile(new URL(name + '.md', base))
     let expected = String(await fs.readFile(new URL(name + '.html', base)))
     let actual = micromark(input, {
@@ -273,5 +264,7 @@ function testOne(t, basename) {
     }
 
     t.deepEqual(actual, expected, name)
-  })
-}
+  }
+
+  t.end()
+})
