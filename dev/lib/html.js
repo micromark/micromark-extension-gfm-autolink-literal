@@ -12,17 +12,26 @@ export const gfmAutolinkLiteralHtml = {
   exit: {literalAutolinkEmail, literalAutolinkHttp, literalAutolinkWww}
 }
 
-/** @type {Handle} */
+/**
+ * @this {CompileContext}
+ * @type {Handle}
+ */
 function literalAutolinkWww(token) {
   anchorFromToken.call(this, token, 'http://')
 }
 
-/** @type {Handle} */
+/**
+ * @this {CompileContext}
+ * @type {Handle}
+ */
 function literalAutolinkEmail(token) {
   anchorFromToken.call(this, token, 'mailto:')
 }
 
-/** @type {Handle} */
+/**
+ * @this {CompileContext}
+ * @type {Handle}
+ */
 function literalAutolinkHttp(token) {
   anchorFromToken.call(this, token)
 }

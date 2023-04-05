@@ -1,6 +1,7 @@
 /**
  * @typedef {import('micromark-util-types').Extension} Extension
  * @typedef {import('micromark-util-types').ConstructRecord} ConstructRecord
+ * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
  * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
  * @typedef {import('micromark-util-types').Previous} Previous
  * @typedef {import('micromark-util-types').State} State
@@ -59,7 +60,10 @@ text[codes.lowercaseH] = [emailAutolink, httpAutolink]
 text[codes.uppercaseW] = [emailAutolink, wwwAutolink]
 text[codes.lowercaseW] = [emailAutolink, wwwAutolink]
 
-/** @type {Tokenizer} */
+/**
+ * @this {TokenizeContext}
+ * @type {Tokenizer}
+ */
 function tokenizeEmailAutolink(effects, ok, nok) {
   const self = this
   /** @type {boolean} */
@@ -73,7 +77,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
   function start(code) {
     if (
       !gfmAtext(code) ||
-      !previousEmail(self.previous) ||
+      !previousEmail.call(self, self.previous) ||
       previousUnbalanced(self.events)
     ) {
       return nok(code)
@@ -156,7 +160,10 @@ function tokenizeEmailAutolink(effects, ok, nok) {
   }
 }
 
-/** @type {Tokenizer} */
+/**
+ * @this {TokenizeContext}
+ * @type {Tokenizer}
+ */
 function tokenizeWwwAutolink(effects, ok, nok) {
   const self = this
 
@@ -166,7 +173,7 @@ function tokenizeWwwAutolink(effects, ok, nok) {
   function start(code) {
     if (
       (code !== codes.uppercaseW && code !== codes.lowercaseW) ||
-      !previousWww(self.previous) ||
+      !previousWww.call(self, self.previous) ||
       previousUnbalanced(self.events)
     ) {
       return nok(code)
@@ -192,7 +199,10 @@ function tokenizeWwwAutolink(effects, ok, nok) {
   }
 }
 
-/** @type {Tokenizer} */
+/**
+ * @this {TokenizeContext}
+ * @type {Tokenizer}
+ */
 function tokenizeHttpAutolink(effects, ok, nok) {
   const self = this
 
@@ -202,7 +212,7 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   function start(code) {
     if (
       (code !== codes.uppercaseH && code !== codes.lowercaseH) ||
-      !previousHttp(self.previous) ||
+      !previousHttp.call(self, self.previous) ||
       previousUnbalanced(self.events)
     ) {
       return nok(code)
@@ -302,7 +312,10 @@ function tokenizeHttpAutolink(effects, ok, nok) {
   }
 }
 
-/** @type {Tokenizer} */
+/**
+ * @this {TokenizeContext}
+ * @type {Tokenizer}
+ */
 function tokenizeWww(effects, ok, nok) {
   return start
 
@@ -352,7 +365,10 @@ function tokenizeWww(effects, ok, nok) {
   }
 }
 
-/** @type {Tokenizer} */
+/**
+ * @this {TokenizeContext}
+ * @type {Tokenizer}
+ */
 function tokenizeDomain(effects, ok, nok) {
   /** @type {boolean|undefined} */
   let hasUnderscoreInLastSegment
@@ -418,7 +434,10 @@ function tokenizeDomain(effects, ok, nok) {
   }
 }
 
-/** @type {Tokenizer} */
+/**
+ * @this {TokenizeContext}
+ * @type {Tokenizer}
+ */
 function tokenizePath(effects, ok) {
   let balance = 0
 
@@ -471,7 +490,10 @@ function tokenizePath(effects, ok) {
   }
 }
 
-/** @type {Tokenizer} */
+/**
+ * @this {TokenizeContext}
+ * @type {Tokenizer}
+ */
 function tokenizeNamedCharacterReference(effects, ok, nok) {
   return start
 
@@ -505,7 +527,10 @@ function tokenizeNamedCharacterReference(effects, ok, nok) {
   }
 }
 
-/** @type {Tokenizer} */
+/**
+ * @this {TokenizeContext}
+ * @type {Tokenizer}
+ */
 function tokenizePunctuation(effects, ok, nok) {
   return start
 
@@ -598,9 +623,12 @@ function previousHttp(code) {
   return code === codes.eof || !asciiAlpha(code)
 }
 
-/** @type {Previous} */
+/**
+ * @this {TokenizeContext}
+ * @type {Previous}
+ */
 function previousEmail(code) {
-  return code !== codes.slash && previousHttp(code)
+  return code !== codes.slash && previousHttp.call(this, code)
 }
 
 /**
