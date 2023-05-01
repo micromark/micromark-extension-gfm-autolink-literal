@@ -8,7 +8,7 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-[micromark][] extension to support GFM [literal autolinks][spec].
+[micromark][] extensions to support GFM [literal autolinks][spec].
 
 ## Contents
 
@@ -19,6 +19,7 @@
 *   [API](#api)
     *   [`gfmAutolinkLiteral`](#gfmautolinkliteral)
     *   [`gfmAutolinkLiteralHtml`](#gfmautolinkliteralhtml)
+*   [Bugs](#bugs)
 *   [Authoring](#authoring)
 *   [HTML](#html)
 *   [CSS](#css)
@@ -32,7 +33,7 @@
 
 ## What is this?
 
-This package contains extensions that add support for the autolink syntax
+This package contains extensions that add support for the extra autolink syntax
 enabled by GFM to [`micromark`][micromark].
 
 GitHub employs different algorithms to autolink: one at parse time and one at
@@ -43,27 +44,33 @@ But also because issues/PRs/comments omit (perhaps by accident?) the second
 algorithm for `www.`, `http://`, and `https://` links (but not for email links).
 
 As this is a syntax extension, it focuses on the first algorithm.
-The second algorithm is performed by [`mdast-util-gfm-autolink-literal`][util].
+The second algorithm is performed by
+[`mdast-util-gfm-autolink-literal`][mdast-util-gfm-autolink-literal].
 The `html` part of this micromark extension does not operate on an AST and hence
 can’t perform the second algorithm.
 
+The implementation of autolink literal on github.com is currently buggy.
+The bugs have been reported on [`cmark-gfm`][cmark-gfm].
+This micromark extension matches github.com except for its bugs.
+
 ## When to use this
 
-These tools are all low-level.
-In many cases, you want to use [`remark-gfm`][plugin] with remark instead.
+This project is useful when you want to support autolink literals in markdown.
 
-Even when you want to use `micromark`, you likely want to use
-[`micromark-extension-gfm`][micromark-extension-gfm] to support all GFM
-features.
-That extension includes this extension.
+You can use these extensions when you are working with [`micromark`][micromark].
+To support all GFM features, use
+[`micromark-extension-gfm`][micromark-extension-gfm] instead.
 
-When working with `mdast-util-from-markdown`, you must combine this package with
-[`mdast-util-gfm-autolink-literal`][util].
+When you need a syntax tree, combine this package with
+[`mdast-util-gfm-autolink-literal`][mdast-util-gfm-autolink-literal].
+
+All these packages are used in [`remark-gfm`][remark-gfm], which focusses on
+making it easier to transform content by abstracting these internals away.
 
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
+In Node.js (version 16+), install with [npm][]:
 
 ```sh
 npm install micromark-extension-gfm-autolink-literal
@@ -108,47 +115,56 @@ Yields:
 
 ## API
 
-This package exports the identifiers `gfmAutolinkLiteral` and
-`gfmAutolinkLiteralHtml`.
+This package exports the identifiers
+[`gfmAutolinkLiteral`][api-gfm-autolink-literal] and
+[`gfmAutolinkLiteralHtml`][api-gfm-autolink-literal-html].
 There is no default export.
 
-The export map supports the endorsed [`development` condition][condition].
+The export map supports the [`development` condition][development].
 Run `node --conditions development module.js` to get instrumented dev code.
 Without this condition, production code is loaded.
 
 ### `gfmAutolinkLiteral`
 
-Syntax extension for micromark (passed in `extensions`).
+Extension for `micromark` that can be passed in `extensions` to enable GFM
+autolink literal syntax ([`Extension`][micromark-extension]).
 
 ### `gfmAutolinkLiteralHtml`
 
-HTML extension for micromark (can be passed in `htmlExtensions`).
+Extension for `micromark` that can be passed in `htmlExtensions` to support
+GFM autolink literals when serializing to HTML
+([`HtmlExtension`][micromark-html-extension]).
+
+## Bugs
+
+GitHub’s own algorithm to parse autolink literals contains three bugs.
+A smaller bug is left unfixed in this project for consistency.
+Two main bugs are not present in this project.
+The issues relating to autolink literals are:
+
+*   [GFM autolink extension (`www.`, `https?://` parts): links don’t work when
+    after bracket](https://github.com/github/cmark-gfm/issues/278)\
+    fixed here ✅
+*   [GFM autolink extension (`www.` part): uppercase does not match on
+    issues/PRs/comments](https://github.com/github/cmark-gfm/issues/280)\
+    fixed here ✅
+*   [GFM autolink extension (`www.` part): the word `www`
+    matches](https://github.com/github/cmark-gfm/issues/279)\
+    present here for consistency
 
 ## Authoring
 
-When authoring markdown, it’s recommended *not* to use this construct.
-It is fragile (easy to get wrong) and not pretty to readers (it’s presented as
-just a URL, there is no descriptive text).
-Instead, use link (resource) or link (label):
-
-```markdown
-Instead of https://example.com (worst), use <https://example.com> (better),
-or [link (resource)](https://example.com) or [link (reference)][ref] (best).
-
-[ref]: https://example.com
-```
-
-When authoring markdown where the source does not matter (such as comments to
-some page), it can be useful to quickly paste URLs, and this will mostly work.
+It is recommended to use labels, either with a resource or a definition,
+instead of autolink literals, as those allow relative URLs and descriptive
+text to explain the URL in prose.
 
 ## HTML
 
-GFM autolink literals, similar to normal CommonMark autolinks (such as
-`<https://example.com>`), relate to the `<a>` element in HTML.
-See [*§ 4.5.1 The `a` element*][html] in the HTML spec for more info.
-When an email autolink is used, the string `mailto:` is prepended before the
-email, when generating the `href` attribute of the hyperlink.
-When a `www` autolink is used, the string `http://` is prepended.
+GFM autolink literals relate to the `<a>` element in HTML.
+See [*§ 4.5.1 The `a` element*][html-a] in the HTML spec for more info.
+When an email autolink is used, the string `mailto:` is prepended when
+generating the `href` attribute of the hyperlink.
+When a www autolink is used, the string `http://` is prepended.
 
 ## CSS
 
@@ -183,53 +199,93 @@ a:not([href]) {
 
 ## Syntax
 
-Autolink literals are very complex to parse.
-They form with, roughly, the following BNF:
+Autolink literals form with, roughly, the following BNF:
 
 ```bnf
-; Restriction: not allowed to be in unbalanced braces.
-autolink ::= www-autolink | http-autolink | email-autolink
+gfm_autolink_literal ::= gfm_protocol_autolink | gfm_www_autolink | gfm_email_autolink
 
-; Restriction: the code before must be `www-autolink-before`.
-www-autolink ::= 3( "w" | "W" ) "." [ domain [ path ] ]
-www-autolink-before ::= eof | eol | space-or-tab | "(" | "*" | "_" | "~"
+; Restriction: the code before must be `www_autolink_before`.
+; Restriction: the code after `.` must not be eof.
+www_autolink ::= 3('w' | 'W') '.' [domain [path]]
+www_autolink_before ::= eof | eol | space_or_tab | '(' | '*' | '_' | '[' | ']' | '~'
 
-; Restriction: the code before must be `http-autolink-before`.
-; Restriction: the code after the protocol must be `http-autolink-protocol-after`.
-http-autolink ::= ( "h" | "H" ) 2( "t" | "T" ) ( "p" | "P" ) [ "s" | "S" ] ":" 2"/" domain [ path ]
-http-autolink-before ::= code - ascii-alpha
-http-autolink-protocol-after ::= code - eof - eol - ascii-control - unicode-whitespace - unicode-punctuation
+; Restriction: the code before must be `http_autolink_before`.
+; Restriction: the code after the protocol must be `http_autolink_protocol_after`.
+http_autolink ::= ('h' | 'H') 2('t' | 'T') ('p' | 'P') ['s' | 'S'] ':' 2'/' domain [path]
+http_autolink_before ::= byte - ascii_alpha
+http_autolink_protocol_after ::= byte - eof - eol - ascii_control - unicode_whitespace - ode_punctuation
 
-; Restriction: the code before must be `email-autolink-before`.
-; Restriction: `ascii-digit` may not occur in the last label part of the label.
-email-autolink ::= 1*( "+" | "-" | "." | "_" | ascii-alphanumeric ) "@" 1*( 1*label-segment label-dot-cont ) 1*label-segment
-email-autolink-before ::= code - ascii-alpha - "/"
+; Restriction: the code before must be `email_autolink_before`.
+; Restriction: `ascii_digit` may not occur in the last label part of the label.
+email_autolink ::= 1*('+' | '-' | '.' | '_' | ascii_alphanumeric) '@' 1*(1*label_segment l_dot_cont) 1*label_segment
+email_autolink_before ::= byte - ascii_alpha - '/'
 
 ; Restriction: `_` may not occur in the last two domain parts.
-domain ::= 1*( url-ampt-cont | domain-punct-cont | "-" | code - eof - ascii-control - unicode-whitespace - unicode-punctuation )
+domain ::= 1*(url_ampt_cont | domain_punct_cont | '-' | byte - eof - ascii_control - ode_whitespace - unicode_punctuation)
 ; Restriction: must not be followed by `punct`.
-domain-punct-cont ::= "." | "_"
+domain_punct_cont ::= '.' | '_'
 ; Restriction: must not be followed by `char-ref`.
-url-ampt-cont ::= "&"
+url_ampt_cont ::= '&'
 
 ; Restriction: a counter `balance = 0` is increased for every `(`, and decreased for every `)`.
-; Restriction: `)` must not be `paren-at-end`.
-path ::= 1*( url-ampt-cont | path-punctuation-cont | "(" | ")" | code - eof - eol - space-or-tab )
+; Restriction: `)` must not be `paren_at_end`.
+path ::= 1*(url_ampt_cont | path_punctuation_cont | '(' | ')' | byte - eof - eol - space_or_tab)
 ; Restriction: must not be followed by `punct`.
-path-punctuation-cont ::= trailing-punctuation - "<"
+path_punctuation_cont ::= trailing_punctuation - '<'
 ; Restriction: must be followed by `punct` and `balance` must be less than `0`.
-paren-at-end ::= ")"
+paren_at_end ::= ')'
 
-label-segment ::= label-dash-underscore-cont | ascii-alpha | ascii-digit
+label_segment ::= label_dash_underscore_cont | ascii_alpha | ascii_digit
 ; Restriction: if followed by `punct`, the whole email autolink is invalid.
-label-dash-underscore-cont ::= "-" | "_"
+label_dash_underscore_cont ::= '-' | '_'
 ; Restriction: must not be followed by `punct`.
-label-dot-cont ::= "."
+label_dot_cont ::= '.'
 
-punct ::= *trailing-punctuation ( code - eof - eol - space-or-tab - "<" )
-char-ref ::= *ascii-alpha ";" path-end
-trailing-punctuation ::= "!" | "\"" | "'" | ")" | "*" | "," | "." | ":" | ";" | "<" | '?' | '_' | '~'
+punct ::= *trailing_punctuation ( byte - eof - eol - space_or_tab - '<' )
+char_ref ::= *ascii_alpha ';' path_end
+trailing_punctuation ::= '!' | '"' | '\'' | ')' | '*' | ',' | '.' | ':' | ';' | '<' | '?' | '_' | '~'
 ```
+
+The grammar for GFM autolink literal is very relaxed: basically anything
+except for whitespace is allowed after a prefix.
+To use whitespace characters and otherwise impossible characters, in URLs,
+you can use percent encoding:
+
+```markdown
+https://example.com/alpha%20bravo
+```
+
+Yields:
+
+```html
+<p><a href="https://example.com/alpha%20bravo">https://example.com/alpha%20bravo</a></p>
+```
+
+There are several cases where incorrect encoding of URLs would, in other
+languages, result in a parse error.
+In markdown, there are no errors, and URLs are normalized.
+In addition, many characters are percent encoded
+([`sanitizeUri`][micromark-util-sanitize-uri]).
+For example:
+
+```markdown
+www.a👍b%
+```
+
+Yields:
+
+```html
+<p><a href="http://www.a%F0%9F%91%8Db%25">www.a👍b%</a></p>
+```
+
+There is a big difference between how www and protocol literals work
+compared to how email literals work.
+The first two are done when parsing, and work like anything else in
+markdown.
+But email literals are handled afterwards: when everything is parsed, we
+look back at the events to figure out if there were email addresses.
+This particularly affects how they interleave with character escapes and
+character references.
 
 ## Types
 
@@ -238,9 +294,12 @@ It exports no additional types.
 
 ## Compatibility
 
-This package is at least compatible with all maintained versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
-It also works in Deno and modern browsers.
+Projects maintained by the unified collective are compatible with all maintained
+versions of Node.js.
+As of now, that is Node.js 16+.
+Our projects sometimes work with older versions, but this is not guaranteed.
+
+These extensions work with `micromark` version 3+.
 
 ## Security
 
@@ -250,12 +309,14 @@ construct always produces safe links.
 
 ## Related
 
-*   [`syntax-tree/mdast-util-gfm-autolink-literal`][util]
-    — support GFM autolink literals in mdast
-*   [`syntax-tree/mdast-util-gfm`][mdast-util-gfm]
-    — support GFM in mdast
-*   [`remarkjs/remark-gfm`][plugin]
-    — support GFM in remark
+*   [`micromark-extension-gfm`][micromark-extension-gfm]
+    — support all of GFM
+*   [`mdast-util-gfm-autolink-literal`][mdast-util-gfm-autolink-literal]
+    — support all of GFM in mdast
+*   [`mdast-util-gfm`][mdast-util-gfm]
+    — support all of GFM in mdast
+*   [`remark-gfm`][remark-gfm]
+    — support all of GFM in remark
 
 ## Contribute
 
@@ -317,20 +378,32 @@ abide by its terms.
 
 [typescript]: https://www.typescriptlang.org
 
-[condition]: https://nodejs.org/api/packages.html#packages_resolving_user_conditions
-
-[util]: https://github.com/syntax-tree/mdast-util-gfm-autolink-literal
-
-[plugin]: https://github.com/remarkjs/remark-gfm
-
-[spec]: https://github.github.com/gfm/#autolinks-extension-
-
-[html]: https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
-
-[css]: https://github.com/sindresorhus/github-markdown-css
+[development]: https://nodejs.org/api/packages.html#packages_resolving_user_conditions
 
 [micromark]: https://github.com/micromark/micromark
 
 [micromark-extension-gfm]: https://github.com/micromark/micromark-extension-gfm
 
+[micromark-util-sanitize-uri]: https://github.com/micromark/micromark/tree/main/packages/micromark-util-sanitize-uri
+
+[micromark-extension]: https://github.com/micromark/micromark#syntaxextension
+
+[micromark-html-extension]: https://github.com/micromark/micromark#htmlextension
+
 [mdast-util-gfm]: https://github.com/syntax-tree/mdast-util-gfm
+
+[mdast-util-gfm-autolink-literal]: https://github.com/syntax-tree/mdast-util-gfm-autolink-literal
+
+[remark-gfm]: https://github.com/remarkjs/remark-gfm
+
+[spec]: https://github.github.com/gfm/#autolinks-extension-
+
+[html-a]: https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
+
+[css]: https://github.com/sindresorhus/github-markdown-css
+
+[cmark-gfm]: https://github.com/github/cmark-gfm
+
+[api-gfm-autolink-literal]: #gfmautolinkliteral
+
+[api-gfm-autolink-literal-html]: #gfmautolinkliteralhtml
