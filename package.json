@@ -43,8 +43,7 @@
     "micromark-util-character": "^1.0.0",
     "micromark-util-sanitize-uri": "^1.0.0",
     "micromark-util-symbol": "^1.0.0",
-    "micromark-util-types": "^1.0.0",
-    "uvu": "^0.5.0"
+    "micromark-util-types": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
@@ -81,6 +80,7 @@
   "xo": {
     "prettier": true,
     "rules": {
+      "complexity": "off",
       "n/file-extension-in-import": "off",
       "unicorn/no-this-assignment": "off"
     },

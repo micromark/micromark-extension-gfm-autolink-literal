@@ -20,7 +20,7 @@ test('core', async () => {
 })
 
 test('markdown -> html (micromark)', () => {
-  assert.deepEqual(
+  assert.equal(
     micromark('www.a.)', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -29,7 +29,7 @@ test('markdown -> html (micromark)', () => {
     'should support a closing paren at TLD'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.a b', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -38,7 +38,7 @@ test('markdown -> html (micromark)', () => {
     'should support a no TLD'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.a/b c', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -47,7 +47,7 @@ test('markdown -> html (micromark)', () => {
     'should support a path instead of TLD'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.�a', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -56,7 +56,7 @@ test('markdown -> html (micromark)', () => {
     'should support a replacement character in a domain'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('http://點看.com', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -65,7 +65,7 @@ test('markdown -> html (micromark)', () => {
     'should support non-ascii characters in a domain (http)'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('點看@example.com', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -74,7 +74,7 @@ test('markdown -> html (micromark)', () => {
     'should *not* support non-ascii characters in atext (email)'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('example@點看.com', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -83,7 +83,7 @@ test('markdown -> html (micromark)', () => {
     'should *not* support non-ascii characters in a domain (email)'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.點看.com', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -92,7 +92,7 @@ test('markdown -> html (micromark)', () => {
     'should support non-ascii characters in a domain (www)'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.a.com/點看', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -101,7 +101,7 @@ test('markdown -> html (micromark)', () => {
     'should support non-ascii characters in a path'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.-a.b', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -110,7 +110,7 @@ test('markdown -> html (micromark)', () => {
     'should support a dash to start a domain'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.$', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -119,7 +119,7 @@ test('markdown -> html (micromark)', () => {
     'should support a dollar as a domain name'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.a..b.c', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -128,7 +128,7 @@ test('markdown -> html (micromark)', () => {
     'should support adjacent dots in a domain name'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('www.a&a;', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -137,7 +137,7 @@ test('markdown -> html (micromark)', () => {
     'should support named character references in domains'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('https://a.bc/d/e/).', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -146,7 +146,7 @@ test('markdown -> html (micromark)', () => {
     'should support a closing paren and period after a path'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('https://a.bc/d/e/.)', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -155,7 +155,7 @@ test('markdown -> html (micromark)', () => {
     'should support a period and closing paren after a path'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('https://a.bc).', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -164,7 +164,7 @@ test('markdown -> html (micromark)', () => {
     'should support a closing paren and period after a domain'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('https://a.bc.)', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -173,7 +173,7 @@ test('markdown -> html (micromark)', () => {
     'should support a period and closing paren after a domain'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('https://a.bc).d', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -182,7 +182,7 @@ test('markdown -> html (micromark)', () => {
     'should support a closing paren and period in a path'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('https://a.bc.)d', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -191,7 +191,7 @@ test('markdown -> html (micromark)', () => {
     'should support a period and closing paren in a path'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('https://a.bc/))d', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -200,7 +200,7 @@ test('markdown -> html (micromark)', () => {
     'should support two closing parens in a path'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('ftp://a/b/c.txt', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -211,7 +211,7 @@ test('markdown -> html (micromark)', () => {
 
   // Note: GH comments/issues/PRs do not link this, but Gists/readmes do.
   // To do: Astrals in micromark.
-  // assert.deepEqual(
+  // assert.equal(
   //   micromark('，www.example.com', {
   //     extensions: [gfmAutolinkLiteral],
   //     htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -220,7 +220,7 @@ test('markdown -> html (micromark)', () => {
   //   'should support www links after Unicode punctuation'
   // )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('，https://example.com', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -229,7 +229,7 @@ test('markdown -> html (micromark)', () => {
     'should support http links after Unicode punctuation'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('，example@example.com', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -238,7 +238,7 @@ test('markdown -> html (micromark)', () => {
     'should support email links after Unicode punctuation'
   )
 
-  assert.deepEqual(
+  assert.equal(
     micromark('http&#x3A;//user:password@host:port/path?key=value#fragment', {
       extensions: [gfmAutolinkLiteral],
       htmlExtensions: [gfmAutolinkLiteralHtml]
@@ -307,6 +307,105 @@ test('fixtures', async () => {
       )
     }
 
-    assert.deepEqual(actual, expected, name)
+    // GitHub’s own algorithm to parse autolink literals contains bugs.
+    // See: GFM autolink extension (`www.`, `https?://` parts): links don’t work when after bracket
+    // <https://github.com/github/cmark-gfm/issues/278)>
+    if (name === 'brackets.comment') {
+      expected = expected
+        .replace(
+          /\[]www\.a\.com©b/,
+          '[]<a href="http://www.a.com&#x26;copy;b">www.a.com&#x26;copy;b</a>'
+        )
+        .replace(
+          /\[\[]]www\.a\.com©b/,
+          '[[]]<a href="http://www.a.com&#x26;copy;b">www.a.com&#x26;copy;b</a>'
+        )
+    }
+
+    if (name === 'combined-with-links.comment') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/a\.com]<\/a><\/p>/g, 'a.com</a>]</p>')
+    }
+
+    if (name === 'domain-character-reference-like-named') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/a&#x26;b]<\/a><\/p>/g, 'a&#x26;b</a>]</p>')
+    }
+
+    if (name === 'domain-character-reference-like-numerical') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/a&#x26;#35]<\/a><\/p>/g, 'a&#x26;#35</a>]</p>')
+    }
+
+    if (name === 'http-domain-continue') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/a]<\/a><\/p>/g, 'a</a>]</p>')
+    }
+
+    if (name === 'http-path-continue') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/a\/b]<\/a><\/p>/g, 'a/b</a>]</p>')
+    }
+
+    if (name === 'http-path-start') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/a\/]<\/a><\/p>/g, 'a/</a>]</p>')
+    }
+
+    if (name === 'path-character-reference-like-named') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/b&#x26;c]<\/a><\/p>/g, 'b&#x26;c</a>]</p>')
+    }
+
+    if (name === 'path-character-reference-like-numerical') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/b&#x26;#35]<\/a><\/p>/g, 'b&#x26;#35</a>]</p>')
+    }
+
+    if (name === 'path-or-link-end') {
+      expected = expected
+        .replace(/%5D\(\)">/g, '">')
+        .replace(/d]\(\)<\/a><\/p>/g, 'd</a>]()</p>')
+    }
+
+    if (name === 'www-domain-continue') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/a]<\/a><\/p>/g, 'a</a>]</p>')
+    }
+
+    if (name === 'www-domain-dot') {
+      expected = expected
+        .replace(/\.%5D">/g, '">')
+        .replace(/a\.]<\/a><\/p>/g, 'a</a>.]</p>')
+    }
+
+    if (name === 'www-domain-start.comment') {
+      expected = expected
+        .replace(/\.%5D">/g, '">')
+        .replace(/\.]<\/a><\/p>/g, '</a>.]</p>')
+    }
+
+    if (name === 'www-path-continue.comment') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/b]<\/a><\/p>/g, 'b</a>]</p>')
+    }
+
+    if (name === 'www-path-start.comment') {
+      expected = expected
+        .replace(/%5D">/g, '">')
+        .replace(/\/]<\/a><\/p>/g, '/</a>]</p>')
+    }
+
+    assert.equal(actual, expected, name)
   }
 })
