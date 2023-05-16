@@ -46,7 +46,7 @@
     "micromark-util-types": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "c8": "^7.0.0",
     "create-gfm-fixtures": "^1.0.0",
     "micromark": "^3.0.0",
