@@ -48,6 +48,7 @@ const text = {}
  */
 export const gfmAutolinkLiteral = {text}
 
+/** @type {Code} */
 let code = codes.digit0
 
 // Add alphanumerics.
@@ -344,6 +345,7 @@ function tokenizeProtocolAutolink(effects, ok, nok) {
   function protocolPrefixInside(code) {
     // `5` is size of `https`
     if (asciiAlpha(code) && buffer.length < 5) {
+      // @ts-expect-error: definitely number.
       buffer += String.fromCodePoint(code)
       effects.consume(code)
       return protocolPrefixInside
@@ -957,8 +959,8 @@ function previousUnbalanced(events) {
       break
     }
 
-    // @ts-expect-error If we’ve seen this token, and it was marked as not
-    // having any unbalanced bracket before it, we can exit.
+    // If we’ve seen this token, and it was marked as not having any unbalanced
+    // bracket before it, we can exit.
     if (token._gfmAutolinkLiteralWalkedInto) {
       result = false
       break
@@ -966,7 +968,7 @@ function previousUnbalanced(events) {
   }
 
   if (events.length > 0 && !result) {
-    // @ts-expect-error Mark the last token as “walked into” w/o finding
+    // Mark the last token as “walked into” w/o finding
     // anything.
     events[events.length - 1][1]._gfmAutolinkLiteralWalkedInto = true
   }
