@@ -47,7 +47,7 @@ function literalAutolinkHttp(token) {
  * @this CompileContext
  * @param {Token} token
  * @param {string | null | undefined} [protocol]
- * @returns {void}
+ * @returns {undefined}
  */
 function anchorFromToken(token, protocol) {
   const url = this.sliceSerialize(token)
