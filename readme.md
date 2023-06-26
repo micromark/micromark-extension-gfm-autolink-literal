@@ -126,13 +126,23 @@ Without this condition, production code is loaded.
 
 ### `gfmAutolinkLiteral()`
 
+Create an extension for `micromark` to support GitHub autolink literal
+syntax.
+
+###### Parameters
+
 Extension for `micromark` that can be passed in `extensions` to enable GFM
 autolink literal syntax ([`Extension`][micromark-extension]).
 
 ### `gfmAutolinkLiteralHtml()`
 
+Create an HTML extension for `micromark` to support GitHub autolink literal
+when serializing to HTML.
+
+###### Parameters
+
 Extension for `micromark` that can be passed in `htmlExtensions` to support
-GFM autolink literals when serializing to HTML
+GitHub autolink literal when serializing to HTML
 ([`HtmlExtension`][micromark-html-extension]).
 
 ## Bugs
@@ -294,12 +304,15 @@ It exports no additional types.
 
 ## Compatibility
 
-Projects maintained by the unified collective are compatible with all maintained
+Projects maintained by the unified collective are compatible with maintained
 versions of Node.js.
-As of now, that is Node.js 16+.
-Our projects sometimes work with older versions, but this is not guaranteed.
 
-These extensions work with `micromark` version 3+.
+When we cut a new major release, we drop support for unmaintained versions of
+Node.
+This means we try to keep the current release line,
+`micromark-extension-gfm-autolink-literal@^1`, compatible with Node.js 16.
+
+This package works with `micromark` version `3` and later.
 
 ## Security
 
@@ -346,9 +359,9 @@ abide by its terms.
 
 [downloads]: https://www.npmjs.com/package/micromark-extension-gfm-autolink-literal
 
-[size-badge]: https://img.shields.io/bundlephobia/minzip/micromark-extension-gfm-autolink-literal.svg
+[size-badge]: https://img.shields.io/badge/dynamic/json?label=minzipped%20size&query=$.size.compressedSize&url=https://deno.bundlejs.com/?q=micromark-extension-gfm-autolink-literal
 
-[size]: https://bundlephobia.com/result?p=micromark-extension-gfm-autolink-literal
+[size]: https://bundlejs.com/?q=micromark-extension-gfm-autolink-literal
 
 [sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
 
@@ -368,11 +381,11 @@ abide by its terms.
 
 [author]: https://wooorm.com
 
-[contributing]: https://github.com/micromark/.github/blob/HEAD/contributing.md
+[contributing]: https://github.com/micromark/.github/blob/main/contributing.md
 
-[support]: https://github.com/micromark/.github/blob/HEAD/support.md
+[support]: https://github.com/micromark/.github/blob/main/support.md
 
-[coc]: https://github.com/micromark/.github/blob/HEAD/code-of-conduct.md
+[coc]: https://github.com/micromark/.github/blob/main/code-of-conduct.md
 
 [esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
 
