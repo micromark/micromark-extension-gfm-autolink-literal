@@ -27,8 +27,6 @@
   ],
   "sideEffects": false,
   "type": "module",
-  "main": "index.js",
-  "types": "index.d.ts",
   "files": [
     "dev/",
     "lib/",
