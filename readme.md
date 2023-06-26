@@ -17,8 +17,8 @@
 *   [Install](#install)
 *   [Use](#use)
 *   [API](#api)
-    *   [`gfmAutolinkLiteral`](#gfmautolinkliteral)
-    *   [`gfmAutolinkLiteralHtml`](#gfmautolinkliteralhtml)
+    *   [`gfmAutolinkLiteral()`](#gfmautolinkliteral)
+    *   [`gfmAutolinkLiteralHtml()`](#gfmautolinkliteralhtml)
 *   [Bugs](#bugs)
 *   [Authoring](#authoring)
 *   [HTML](#html)
@@ -100,8 +100,8 @@ import {
 } from 'micromark-extension-gfm-autolink-literal'
 
 const output = micromark('Just a URL: www.example.com.', {
-  extensions: [gfmAutolinkLiteral],
-  htmlExtensions: [gfmAutolinkLiteralHtml]
+  extensions: [gfmAutolinkLiteral()],
+  htmlExtensions: [gfmAutolinkLiteralHtml()]
 })
 
 console.log(output)
@@ -124,12 +124,12 @@ The export map supports the [`development` condition][development].
 Run `node --conditions development module.js` to get instrumented dev code.
 Without this condition, production code is loaded.
 
-### `gfmAutolinkLiteral`
+### `gfmAutolinkLiteral()`
 
 Extension for `micromark` that can be passed in `extensions` to enable GFM
 autolink literal syntax ([`Extension`][micromark-extension]).
 
-### `gfmAutolinkLiteralHtml`
+### `gfmAutolinkLiteralHtml()`
 
 Extension for `micromark` that can be passed in `htmlExtensions` to support
 GFM autolink literals when serializing to HTML

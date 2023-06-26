@@ -7,16 +7,18 @@
 
 import {sanitizeUri} from 'micromark-util-sanitize-uri'
 
-// To do: next major: expose functions that yields extension.
-
 /**
- * Extension for `micromark` that can be passed in `htmlExtensions` to support
- * GFM autolink literals when serializing to HTML.
+ * Create an HTML extension for `micromark` to support GitHub autolink literal
+ * when serializing to HTML.
  *
- * @type {HtmlExtension}
+ * @returns {HtmlExtension}
+ *   Extension for `micromark` that can be passed in `htmlExtensions` to
+ *   support GitHub autolink literal when serializing to HTML.
  */
-export const gfmAutolinkLiteralHtml = {
-  exit: {literalAutolinkEmail, literalAutolinkHttp, literalAutolinkWww}
+export function gfmAutolinkLiteralHtml() {
+  return {
+    exit: {literalAutolinkEmail, literalAutolinkHttp, literalAutolinkWww}
+  }
 }
 
 /**
