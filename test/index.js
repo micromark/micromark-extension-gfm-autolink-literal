@@ -275,7 +275,6 @@ test('micromark-extension-gfm-autolink-literal', async function (t) {
   })
 
   // Note: GH comments/issues/PRs do not link this, but Gists/readmes do.
-  // To do: Astrals in micromark.
   // await t.test(
   //   'should support www links after Unicode punctuation',
   //   async function () {
@@ -488,7 +487,7 @@ test('fixtures', async function (t) {
           .replace(/\/]<\/a><\/p>/g, '/</a>]</p>')
       }
 
-      assert.equal(actual, expected, name)
+      assert.equal(actual, expected)
     })
   }
 })
