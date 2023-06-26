@@ -17,7 +17,7 @@ import {
   unicodePunctuation,
   unicodeWhitespace
 } from 'micromark-util-character'
-import {codes} from 'micromark-util-symbol/codes.js'
+import {codes} from 'micromark-util-symbol'
 
 const wwwPrefix = {tokenize: tokenizeWwwPrefix, partial: true}
 const domain = {tokenize: tokenizeDomain, partial: true}
