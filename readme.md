@@ -79,14 +79,14 @@ npm install micromark-extension-gfm-autolink-literal
 In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://esm.sh/micromark-extension-gfm-autolink-literal@1'
+import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://esm.sh/micromark-extension-gfm-autolink-literal@2'
 ```
 
 In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://esm.sh/micromark-extension-gfm-autolink-literal@1?bundle'
+  import {gfmAutolinkLiteral, gfmAutolinkLiteralHtml} from 'https://esm.sh/micromark-extension-gfm-autolink-literal@2?bundle'
 </script>
 ```
 
