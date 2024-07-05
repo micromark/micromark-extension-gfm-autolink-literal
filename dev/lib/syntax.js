@@ -28,12 +28,23 @@ const emailDomainDotTrail = {
   partial: true
 }
 
-const wwwAutolink = {tokenize: tokenizeWwwAutolink, previous: previousWww}
+const wwwAutolink = {
+  name: 'wwwAutolink',
+  tokenize: tokenizeWwwAutolink,
+  previous: previousWww
+}
+
 const protocolAutolink = {
+  name: 'protocolAutolink',
   tokenize: tokenizeProtocolAutolink,
   previous: previousProtocol
 }
-const emailAutolink = {tokenize: tokenizeEmailAutolink, previous: previousEmail}
+
+const emailAutolink = {
+  name: 'emailAutolink',
+  tokenize: tokenizeEmailAutolink,
+  previous: previousEmail
+}
 
 /** @type {ConstructRecord} */
 const text = {}

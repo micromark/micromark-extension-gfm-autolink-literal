@@ -19,6 +19,55 @@ test('micromark-extension-gfm-autolink-literal', async function (t) {
     )
   })
 
+  await t.test(
+    'should skip wwwAutolink construct if `disable.null` includes `wwwAutolink`',
+    async function () {
+      assert.equal(
+        micromark('www.a.com', {
+          extensions: [
+            gfmAutolinkLiteral(),
+            {disable: {null: ['wwwAutolink']}}
+          ],
+          htmlExtensions: [gfmAutolinkLiteralHtml()]
+        }),
+        '<p>www.a.com</p>'
+      )
+    }
+  )
+
+  await t.test(
+    'should skip protocolAutolink construct if `disable.null` includes `protocolAutolink`',
+    async function () {
+      assert.equal(
+        micromark('http://a.com', {
+          extensions: [
+            gfmAutolinkLiteral(),
+            {disable: {null: ['protocolAutolink']}}
+          ],
+          htmlExtensions: [gfmAutolinkLiteralHtml()]
+        }),
+        '<p>http://a.com</p>'
+      )
+    }
+  )
+
+  await t.test(
+    'should skip emailAutolink construct if `disable.null` includes `emailAutolink`',
+    async function () {
+      assert.equal(
+        micromark('a@b.com', {
+          extensions: [
+            gfmAutolinkLiteral(),
+            {disable: {null: ['emailAutolink']}}
+          ],
+          htmlExtensions: [gfmAutolinkLiteralHtml()]
+        }),
+        '<p>a@b.com</p>'
+      )
+    }
+  )
+
+
   await t.test('should support a closing paren at TLD', async function () {
     assert.equal(
       micromark('www.a.)', {
