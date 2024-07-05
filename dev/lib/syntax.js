@@ -752,7 +752,7 @@ function tokenizeTrail(effects, ok, nok) {
     // In all other cases, it is considered as continuation of the URL.
     if (code === codes.ampersand) {
       effects.consume(code)
-      return trailCharRefStart
+      return trailCharacterReferenceStart
     }
 
     // Needed because we allow literals after `[`, as we fix:
@@ -816,9 +816,9 @@ function tokenizeTrail(effects, ok, nok) {
    *
    * @type {State}
    */
-  function trailCharRefStart(code) {
+  function trailCharacterReferenceStart(code) {
     // When non-alpha, it’s not a trail.
-    return asciiAlpha(code) ? trailCharRefInside(code) : nok(code)
+    return asciiAlpha(code) ? trailCharacterReferenceInside(code) : nok(code)
   }
 
   /**
@@ -831,7 +831,7 @@ function tokenizeTrail(effects, ok, nok) {
    *
    * @type {State}
    */
-  function trailCharRefInside(code) {
+  function trailCharacterReferenceInside(code) {
     // Switch back to trail if this is well-formed.
     if (code === codes.semicolon) {
       effects.consume(code)
@@ -840,7 +840,7 @@ function tokenizeTrail(effects, ok, nok) {
 
     if (asciiAlpha(code)) {
       effects.consume(code)
-      return trailCharRefInside
+      return trailCharacterReferenceInside
     }
 
     // It’s not a trail.

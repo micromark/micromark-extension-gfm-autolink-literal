@@ -67,7 +67,6 @@ test('micromark-extension-gfm-autolink-literal', async function (t) {
     }
   )
 
-
   await t.test('should support a closing paren at TLD', async function () {
     assert.equal(
       micromark('www.a.)', {
