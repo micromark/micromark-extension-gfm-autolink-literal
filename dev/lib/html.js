@@ -1,8 +1,5 @@
 /**
- * @typedef {import('micromark-util-types').CompileContext} CompileContext
- * @typedef {import('micromark-util-types').Handle} Handle
- * @typedef {import('micromark-util-types').HtmlExtension} HtmlExtension
- * @typedef {import('micromark-util-types').Token} Token
+ * @import {CompileContext, Handle, HtmlExtension, Token} from 'micromark-util-types'
  */
 
 import {sanitizeUri} from 'micromark-util-sanitize-uri'

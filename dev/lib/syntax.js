@@ -1,12 +1,5 @@
 /**
- * @typedef {import('micromark-util-types').Code} Code
- * @typedef {import('micromark-util-types').ConstructRecord} ConstructRecord
- * @typedef {import('micromark-util-types').Event} Event
- * @typedef {import('micromark-util-types').Extension} Extension
- * @typedef {import('micromark-util-types').Previous} Previous
- * @typedef {import('micromark-util-types').State} State
- * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
- * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+ * @import {Code, ConstructRecord, Event, Extension, Previous, State, TokenizeContext, Tokenizer} from 'micromark-util-types'
  */
 
 import {

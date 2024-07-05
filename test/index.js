@@ -20,7 +20,7 @@ test('micromark-extension-gfm-autolink-literal', async function (t) {
   })
 
   await t.test(
-    'should skip wwwAutolink construct if `disable.null` includes `wwwAutolink`',
+    'should skip `wwwAutolink` construct if `disable.null` includes `wwwAutolink`',
     async function () {
       assert.equal(
         micromark('www.a.com', {
@@ -36,7 +36,7 @@ test('micromark-extension-gfm-autolink-literal', async function (t) {
   )
 
   await t.test(
-    'should skip protocolAutolink construct if `disable.null` includes `protocolAutolink`',
+    'should skip `protocolAutolink` construct if `disable.null` includes `protocolAutolink`',
     async function () {
       assert.equal(
         micromark('http://a.com', {
@@ -52,7 +52,7 @@ test('micromark-extension-gfm-autolink-literal', async function (t) {
   )
 
   await t.test(
-    'should skip emailAutolink construct if `disable.null` includes `emailAutolink`',
+    'should skip `emailAutolink` construct if `disable.null` includes `emailAutolink`',
     async function () {
       assert.equal(
         micromark('a@b.com', {
