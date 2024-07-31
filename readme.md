@@ -212,48 +212,48 @@ a:not([href]) {
 Autolink literals form with, roughly, the following BNF:
 
 ```abnf
-gfmAutolinkLiteral ::= gfmProtocolAutolink | gfmWwwAutolink | gfmEmailAutolink
+gfmAutolinkLiteral ::= gfmProtocolAutolink / gfmWwwAutolink / gfmEmailAutolink
 
 ; Restriction: the code before must be `wwwAutolinkBefore`.
 ; Restriction: the code after `.` must not be eof.
-wwwAutolink ::= 3("w" | "W") "." [domain [path]]
-wwwAutolinkBefore ::= eof | eol | spaceOrTab | "(" | "*" | "_" | "[" | "]" | "~"
+wwwAutolink ::= 3("w" / "W") "." [domain [path]]
+wwwAutolinkBefore ::= eof / eol / spaceOrTab / "(" / "*" / "_" / "[" / "]" / "~"
 
 ; Restriction: the code before must be `httpAutolinkBefore`.
 ; Restriction: the code after the protocol must be `httpAutolinkProtocolAfter`.
-httpAutolink ::= ("h" | "H") 2("t" | "T") ("p" | "P") ["s" | "S"] ":" 2"/" domain [path]
+httpAutolink ::= ("h" / "H") 2("t" / "T") ("p" / "P") ["s" / "S"] ":" 2"/" domain [path]
 httpAutolinkBefore ::= byte - asciiAlpha
 httpAutolinkProtocolAfter ::= byte - eof - eol - asciiControl - unicodeWhitespace - unicodePunctuation
 
 ; Restriction: the code before must be `emailAutolinkBefore`.
 ; Restriction: `asciiDigit` may not occur in the last label part of the label.
-emailAutolink ::= 1*("+" | "-" | "." | "_" | asciiAlphanumeric) "@" 1*(1*labelSegment labelDotCont) 1*labelSegment
+emailAutolink ::= 1*("+" / "-" / "." / "_" / asciiAlphanumeric) "@" 1*(1*labelSegment labelDotCont) 1*labelSegment
 emailAutolinkBefore ::= byte - asciiAlpha - "/"
 
 ; Restriction: `_` may not occur in the last two domain parts.
-domain ::= 1*(urlAmptCont | domainPunctCont | "-" | byte - eof - asciiControl - unicodeWhitespace - unicodePunctuation)
+domain ::= 1*(urlAmptCont / domainPunctCont / "-" / byte - eof - asciiControl - unicodeWhitespace - unicodePunctuation)
 ; Restriction: must not be followed by `punct`.
-domainPunctCont ::= "." | "_"
+domainPunctCont ::= "." / "_"
 ; Restriction: must not be followed by `charRef`.
 urlAmptCont ::= "&"
 
 ; Restriction: a counter `balance = 0` is increased for every `(`, and decreased for every `)`.
 ; Restriction: `)` must not be `parenAtEnd`.
-path ::= 1*(urlAmptCont | pathPunctuationCont | "(" | ")" | byte - eof - eol - spaceOrTab)
+path ::= 1*(urlAmptCont / pathPunctuationCont / "(" / ")" / byte - eof - eol - spaceOrTab)
 ; Restriction: must not be followed by `punct`.
 pathPunctuationCont ::= trailingPunctuation - "<"
 ; Restriction: must be followed by `punct` and `balance` must be less than `0`.
 parenAtEnd ::= ")"
 
-labelSegment ::= labelDashUnderscoreCont | asciiAlpha | asciiDigit
+labelSegment ::= labelDashUnderscoreCont / asciiAlpha / asciiDigit
 ; Restriction: if followed by `punct`, the whole email autolink is invalid.
-labelDashUnderscoreCont ::= "-" | "_"
+labelDashUnderscoreCont ::= "-" / "_"
 ; Restriction: must not be followed by `punct`.
 labelDotCont ::= "."
 
 punct ::= *trailingPunctuation ( byte - eof - eol - spaceOrTab - "<" )
 charRef ::= *asciiAlpha ";" pathEnd
-trailingPunctuation ::= "!" | "\"" | "'" | ")" | "*" | "," | "." | ":" | ";" | "<" | "?" | "_" | "~"
+trailingPunctuation ::= "!" / "\"" / "'" / ")" / "*" / "," / "." / ":" / ";" / "<" / "?" / "_" / "~"
 ```
 
 The grammar for GFM autolink literal is very relaxed: basically anything
