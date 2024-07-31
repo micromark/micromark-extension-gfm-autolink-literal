@@ -211,49 +211,49 @@ a:not([href]) {
 
 Autolink literals form with, roughly, the following BNF:
 
-```bnf
-gfm_autolink_literal ::= gfm_protocol_autolink | gfm_www_autolink | gfm_email_autolink
+```abnf
+gfmAutolinkLiteral ::= gfmProtocolAutolink | gfmWwwAutolink | gfmEmailAutolink
 
-; Restriction: the code before must be `www_autolink_before`.
+; Restriction: the code before must be `wwwAutolinkBefore`.
 ; Restriction: the code after `.` must not be eof.
-www_autolink ::= 3('w' | 'W') '.' [domain [path]]
-www_autolink_before ::= eof | eol | space_or_tab | '(' | '*' | '_' | '[' | ']' | '~'
+wwwAutolink ::= 3("w" | "W") "." [domain [path]]
+wwwAutolinkBefore ::= eof | eol | spaceOrTab | "(" | "*" | "_" | "[" | "]" | "~"
 
-; Restriction: the code before must be `http_autolink_before`.
-; Restriction: the code after the protocol must be `http_autolink_protocol_after`.
-http_autolink ::= ('h' | 'H') 2('t' | 'T') ('p' | 'P') ['s' | 'S'] ':' 2'/' domain [path]
-http_autolink_before ::= byte - ascii_alpha
-http_autolink_protocol_after ::= byte - eof - eol - ascii_control - unicode_whitespace - ode_punctuation
+; Restriction: the code before must be `httpAutolinkBefore`.
+; Restriction: the code after the protocol must be `httpAutolinkProtocolAfter`.
+httpAutolink ::= ("h" | "H") 2("t" | "T") ("p" | "P") ["s" | "S"] ":" 2"/" domain [path]
+httpAutolinkBefore ::= byte - asciiAlpha
+httpAutolinkProtocolAfter ::= byte - eof - eol - asciiControl - unicodeWhitespace - unicodePunctuation
 
-; Restriction: the code before must be `email_autolink_before`.
-; Restriction: `ascii_digit` may not occur in the last label part of the label.
-email_autolink ::= 1*('+' | '-' | '.' | '_' | ascii_alphanumeric) '@' 1*(1*label_segment l_dot_cont) 1*label_segment
-email_autolink_before ::= byte - ascii_alpha - '/'
+; Restriction: the code before must be `emailAutolinkBefore`.
+; Restriction: `asciiDigit` may not occur in the last label part of the label.
+emailAutolink ::= 1*("+" | "-" | "." | "_" | asciiAlphanumeric) "@" 1*(1*labelSegment labelDotCont) 1*labelSegment
+emailAutolinkBefore ::= byte - asciiAlpha - "/"
 
 ; Restriction: `_` may not occur in the last two domain parts.
-domain ::= 1*(url_ampt_cont | domain_punct_cont | '-' | byte - eof - ascii_control - ode_whitespace - unicode_punctuation)
+domain ::= 1*(urlAmptCont | domainPunctCont | "-" | byte - eof - asciiControl - unicodeWhitespace - unicodePunctuation)
 ; Restriction: must not be followed by `punct`.
-domain_punct_cont ::= '.' | '_'
-; Restriction: must not be followed by `char-ref`.
-url_ampt_cont ::= '&'
+domainPunctCont ::= "." | "_"
+; Restriction: must not be followed by `charRef`.
+urlAmptCont ::= "&"
 
 ; Restriction: a counter `balance = 0` is increased for every `(`, and decreased for every `)`.
-; Restriction: `)` must not be `paren_at_end`.
-path ::= 1*(url_ampt_cont | path_punctuation_cont | '(' | ')' | byte - eof - eol - space_or_tab)
+; Restriction: `)` must not be `parenAtEnd`.
+path ::= 1*(urlAmptCont | pathPunctuationCont | "(" | ")" | byte - eof - eol - spaceOrTab)
 ; Restriction: must not be followed by `punct`.
-path_punctuation_cont ::= trailing_punctuation - '<'
+pathPunctuationCont ::= trailingPunctuation - "<"
 ; Restriction: must be followed by `punct` and `balance` must be less than `0`.
-paren_at_end ::= ')'
+parenAtEnd ::= ")"
 
-label_segment ::= label_dash_underscore_cont | ascii_alpha | ascii_digit
+labelSegment ::= labelDashUnderscoreCont | asciiAlpha | asciiDigit
 ; Restriction: if followed by `punct`, the whole email autolink is invalid.
-label_dash_underscore_cont ::= '-' | '_'
+labelDashUnderscoreCont ::= "-" | "_"
 ; Restriction: must not be followed by `punct`.
-label_dot_cont ::= '.'
+labelDotCont ::= "."
 
-punct ::= *trailing_punctuation ( byte - eof - eol - space_or_tab - '<' )
-char_ref ::= *ascii_alpha ';' path_end
-trailing_punctuation ::= '!' | '"' | '\'' | ')' | '*' | ',' | '.' | ':' | ';' | '<' | '?' | '_' | '~'
+punct ::= *trailingPunctuation ( byte - eof - eol - spaceOrTab - "<" )
+charRef ::= *asciiAlpha ";" pathEnd
+trailingPunctuation ::= "!" | "\"" | "'" | ")" | "*" | "," | "." | ":" | ";" | "<" | "?" | "_" | "~"
 ```
 
 The grammar for GFM autolink literal is very relaxed: basically anything
