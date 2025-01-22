@@ -1,48 +1,16 @@
 {
-  "name": "micromark-extension-gfm-autolink-literal",
-  "version": "2.1.0",
-  "description": "micromark extension to support GFM autolink literals",
-  "license": "MIT",
-  "keywords": [
-    "micromark",
-    "micromark-extension",
-    "literal",
-    "url",
-    "autolink",
-    "auto",
-    "link",
-    "gfm",
-    "markdown",
-    "unified"
-  ],
-  "repository": "micromark/micromark-extension-gfm-autolink-literal",
-  "bugs": "https://github.com/micromark/micromark-extension-gfm-autolink-literal/issues",
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/unified"
-  },
   "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
+  "bugs": "https://github.com/micromark/micromark-extension-gfm-autolink-literal/issues",
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)"
   ],
-  "sideEffects": false,
-  "type": "module",
-  "files": [
-    "dev/",
-    "lib/",
-    "index.d.ts",
-    "index.js"
-  ],
-  "exports": {
-    "development": "./dev/index.js",
-    "default": "./index.js"
-  },
   "dependencies": {
     "micromark-util-character": "^2.0.0",
     "micromark-util-sanitize-uri": "^2.0.0",
     "micromark-util-symbol": "^2.0.0",
     "micromark-util-types": "^2.0.0"
   },
+  "description": "micromark extension to support GFM autolink literals",
   "devDependencies": {
     "@types/node": "^22.0.0",
     "c8": "^10.0.0",
@@ -57,16 +25,34 @@
     "typescript": "^5.0.0",
     "xo": "^0.60.0"
   },
-  "scripts": {
-    "prepack": "npm run build && npm run format",
-    "build": "tsc --build --clean && tsc --build && type-coverage && micromark-build",
-    "format": "remark . -qfo && prettier . -w --log-level warn && xo --fix",
-    "test-api-prod": "node --conditions production test/index.js",
-    "test-api-dev": "node --conditions development test/index.js",
-    "test-api": "npm run test-api-dev && npm run test-api-prod",
-    "test-coverage": "c8 --100 --reporter lcov npm run test-api",
-    "test": "npm run build && npm run format && npm run test-coverage"
+  "exports": {
+    "development": "./dev/index.js",
+    "default": "./index.js"
   },
+  "files": [
+    "dev/",
+    "index.d.ts",
+    "index.js",
+    "lib/"
+  ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/unified"
+  },
+  "keywords": [
+    "autolink",
+    "auto",
+    "gfm",
+    "link",
+    "literal",
+    "markdown",
+    "micromark-extension",
+    "micromark",
+    "unified",
+    "url"
+  ],
+  "license": "MIT",
+  "name": "micromark-extension-gfm-autolink-literal",
   "prettier": {
     "bracketSpacing": false,
     "semi": false,
@@ -80,27 +66,46 @@
       "remark-preset-wooorm"
     ]
   },
+  "repository": "micromark/micromark-extension-gfm-autolink-literal",
+  "scripts": {
+    "build": "tsc --build --clean && tsc --build && type-coverage && micromark-build",
+    "format": "remark --frail --output --quiet -- . && prettier --log-level warn --write -- . && xo --fix",
+    "test-api-dev": "node --conditions development test/index.js",
+    "test-api-prod": "node --conditions production test/index.js",
+    "test-api": "npm run test-api-dev && npm run test-api-prod",
+    "test-coverage": "c8 --100 --reporter lcov -- npm run test-api",
+    "test": "npm run build && npm run format && npm run test-coverage"
+  },
+  "sideEffects": false,
   "typeCoverage": {
     "atLeast": 100,
-    "detail": true,
-    "ignoreCatch": true,
     "strict": true
   },
+  "type": "module",
+  "version": "2.1.0",
   "xo": {
-    "prettier": true,
-    "rules": {
-      "complexity": "off",
-      "unicorn/no-this-assignment": "off",
-      "unicorn/prefer-at": "off",
-      "unicorn/prefer-string-replace-all": "off"
-    },
     "overrides": [
       {
         "files": [
-          "**/*.ts"
+          "**/*.d.ts"
         ],
         "rules": {
-          "@typescript-eslint/consistent-type-definitions": 0
+          "@typescript-eslint/array-type": [
+            "error",
+            {
+              "default": "generic"
+            }
+          ],
+          "@typescript-eslint/ban-types": [
+            "error",
+            {
+              "extendDefaults": true
+            }
+          ],
+          "@typescript-eslint/consistent-type-definitions": [
+            "error",
+            "interface"
+          ]
         }
       },
       {
@@ -108,9 +113,16 @@
           "test/**/*.js"
         ],
         "rules": {
-          "no-await-in-loop": 0
+          "no-await-in-loop": "off"
         }
       }
-    ]
+    ],
+    "prettier": true,
+    "rules": {
+      "complexity": "off",
+      "unicorn/no-this-assignment": "off",
+      "unicorn/prefer-at": "off",
+      "unicorn/prefer-string-replace-all": "off"
+    }
   }
 }
