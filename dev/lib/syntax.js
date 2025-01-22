@@ -35,8 +35,7 @@ const protocolAutolink = {
 
 const emailAutolink = {
   name: 'emailAutolink',
-  tokenize: tokenizeEmailAutolink,
-  previous: previousEmail
+  tokenize: tokenizeEmailAutolink
 }
 
 /** @type {ConstructRecord} */
@@ -111,11 +110,7 @@ function tokenizeEmailAutolink(effects, ok, nok) {
    * @type {State}
    */
   function start(code) {
-    if (
-      !gfmAtext(code) ||
-      !previousEmail.call(self, self.previous) ||
-      previousUnbalanced(self.events)
-    ) {
+    if (!gfmAtext(code) || previousUnbalanced(self.events)) {
       return nok(code)
     }
 
@@ -918,18 +913,6 @@ function previousWww(code) {
  */
 function previousProtocol(code) {
   return !asciiAlpha(code)
-}
-
-/**
- * @this {TokenizeContext}
- * @type {Previous}
- */
-function previousEmail(code) {
-  // Do not allow a slash “inside” atext.
-  // The reference code is a bit weird, but that’s what it results in.
-  // Source: <https://github.com/github/cmark-gfm/blob/ef1cfcb/extensions/autolink.c#L307>.
-  // Other than slash, every preceding character is allowed.
-  return !(code === codes.slash || gfmAtext(code))
 }
 
 /**

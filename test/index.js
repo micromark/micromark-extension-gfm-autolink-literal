@@ -416,6 +416,7 @@ test('fixtures', async function (t) {
       // GH strips images that point to just a search or hash.
       actual = actual.replace(/src="[?#][^"]*"/g, 'src=""')
 
+      expected = expected.replace(/ class="notranslate"/g, '')
       // GH doesn’t “fix” the percent-encoding of percentages.
       expected = expected.replace(/%">/g, '%25">')
 
