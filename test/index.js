@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import fs from 'node:fs/promises'
+import process from 'node:process'
 import test from 'node:test'
 import {micromark} from 'micromark'
 import {rehype} from 'rehype'
@@ -375,6 +376,62 @@ test('micromark-extension-gfm-autolink-literal', async function (t) {
         ),
         '<p>http://user:password@host:port/path?key=value#fragment</p>'
       )
+    }
+  )
+
+  await t.test(
+    'should still autolink after a label that resolved to a link',
+    async function () {
+      assert.equal(
+        micromark('[(b)](https://e.com)https://example.com/a]> ', {
+          extensions: [gfmAutolinkLiteral()],
+          htmlExtensions: [gfmAutolinkLiteralHtml()]
+        }),
+        '<p><a href="https://e.com">(b)</a><a href="https://example.com/a%5D%3E">https://example.com/a]&gt;</a></p>'
+      )
+    }
+  )
+
+  await t.test(
+    'should not autolink after an unclosed label',
+    async function () {
+      assert.equal(
+        micromark('[ www.example.com https://example.com a@b.c', {
+          extensions: [gfmAutolinkLiteral()],
+          htmlExtensions: [gfmAutolinkLiteralHtml()]
+        }),
+        '<p>[ www.example.com https://example.com a@b.c</p>'
+      )
+    }
+  )
+
+  await t.test(
+    'should not autolink after an unclosed image label',
+    async function () {
+      assert.equal(
+        micromark('![ www.example.com https://example.com a@b.c', {
+          extensions: [gfmAutolinkLiteral()],
+          htmlExtensions: [gfmAutolinkLiteralHtml()]
+        }),
+        '<p>![ www.example.com https://example.com a@b.c</p>'
+      )
+    }
+  )
+
+  await t.test(
+    'should not scan events quadratically after an unclosed label',
+    async function () {
+      const options = {
+        extensions: [gfmAutolinkLiteral()],
+        htmlExtensions: [gfmAutolinkLiteralHtml()]
+      }
+      const unit = 'some text http and more words here abc@def '
+      const value = '[ ' + unit.repeat(800)
+      const start = process.hrtime.bigint()
+      micromark(value, options)
+      const ms = Number(process.hrtime.bigint() - start) / 1e6
+
+      assert.ok(ms < 2000, 'took ' + ms.toFixed(0) + 'ms')
     }
   )
 })

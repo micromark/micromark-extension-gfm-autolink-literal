@@ -954,12 +954,32 @@ function previousUnbalanced(events) {
       result = false
       break
     }
+
+    // Resume at a previously found unbalanced label if that event still holds
+    // the same token. `_balanced` is not enough: a label that becomes a link
+    // keeps `_balanced === false` while its events are spliced out.
+    const skip = token._gfmAutolinkLiteralSkipTo
+    if (
+      skip !== undefined &&
+      skip.index < index &&
+      events[skip.index] !== undefined &&
+      events[skip.index][1] === skip.token
+    ) {
+      index = skip.index + 1
+    }
   }
 
-  if (events.length > 0 && !result) {
-    // Mark the last token as “walked into” w/o finding
-    // anything.
-    events[events.length - 1][1]._gfmAutolinkLiteralWalkedInto = true
+  if (events.length > 0) {
+    if (!result) {
+      // Mark the last token as “walked into” w/o finding
+      // anything.
+      events[events.length - 1][1]._gfmAutolinkLiteralWalkedInto = true
+    } else if (index >= 0) {
+      events[events.length - 1][1]._gfmAutolinkLiteralSkipTo = {
+        index,
+        token: events[index][1]
+      }
+    }
   }
 
   return result
