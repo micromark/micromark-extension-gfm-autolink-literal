@@ -1,5 +1,5 @@
 /**
- * @import {Code, ConstructRecord, Event, Extension, Previous, State, TokenizeContext, Tokenizer} from 'micromark-util-types'
+ * @import {Code, Construct, ConstructRecord, Effects, Event, Extension, Previous, State, TokenizeContext, Tokenizer} from 'micromark-util-types'
  */
 
 import {
@@ -15,7 +15,6 @@ import {codes} from 'micromark-util-symbol'
 const wwwPrefix = {tokenize: tokenizeWwwPrefix, partial: true}
 const domain = {tokenize: tokenizeDomain, partial: true}
 const path = {tokenize: tokenizePath, partial: true}
-const trail = {tokenize: tokenizeTrail, partial: true}
 const emailDomainDotTrail = {
   tokenize: tokenizeEmailDomainDotTrail,
   partial: true
@@ -497,6 +496,7 @@ function tokenizeWwwPrefix(effects, ok, nok) {
  * @type {Tokenizer}
  */
 function tokenizeDomain(effects, ok, nok) {
+  const trailCheck = trailCheckFactory(this)
   /** @type {boolean | undefined} */
   let underscoreInLastSegment
   /** @type {boolean | undefined} */
@@ -521,7 +521,7 @@ function tokenizeDomain(effects, ok, nok) {
     // marker, optionally followed by more trailing markers, and then
     // followed by an end.
     if (code === codes.dot || code === codes.underscore) {
-      return effects.check(trail, domainAfter, domainAtPunctuation)(code)
+      return trailCheck(effects, domainAfter, domainAtPunctuation)(code)
     }
 
     // GH documents that only alphanumerics (other than `-`, `.`, and `_`) can
@@ -602,6 +602,7 @@ function tokenizeDomain(effects, ok, nok) {
  * @type {Tokenizer}
  */
 function tokenizePath(effects, ok) {
+  const trailCheck = trailCheckFactory(this)
   let sizeOpen = 0
   let sizeClose = 0
 
@@ -651,7 +652,7 @@ function tokenizePath(effects, ok) {
       code === codes.underscore ||
       code === codes.tilde
     ) {
-      return effects.check(trail, ok, pathAtPunctuation)(code)
+      return trailCheck(effects, ok, pathAtPunctuation)(code)
     }
 
     if (
@@ -684,6 +685,58 @@ function tokenizePath(effects, ok) {
 
     effects.consume(code)
     return pathInside
+  }
+}
+
+/**
+ * Create a function to check for a trail.
+ *
+ * When a check finds that something is not a trail, the place where that was
+ * found is stored.
+ * Later checks before that place would find the same, so they are skipped.
+ * Without that, a long run of trailing punctuation that is followed by
+ * something else would take quadratic time.
+ *
+ * @param {TokenizeContext} self
+ *   Context.
+ * @returns {(effects: Effects, ok: State, nok: State) => State}
+ *   Check.
+ */
+function trailCheckFactory(self) {
+  let notTrailBefore = -1
+  /** @type {Construct} */
+  const construct = {tokenize: tokenizeTrailCheck, partial: true}
+
+  return check
+
+  /**
+   * @param {Effects} effects
+   *   Effects.
+   * @param {State} ok
+   *   State when this is a trail.
+   * @param {State} nok
+   *   State when this is not a trail.
+   * @returns {State}
+   *   Start state.
+   */
+  function check(effects, ok, nok) {
+    return self.now().offset < notTrailBefore
+      ? nok
+      : effects.check(construct, ok, nok)
+  }
+
+  /**
+   * @this {TokenizeContext}
+   * @type {Tokenizer}
+   */
+  function tokenizeTrailCheck(effects, ok, nok) {
+    return tokenizeTrail.call(this, effects, ok, notTrail)
+
+    /** @type {State} */
+    function notTrail(code) {
+      notTrailBefore = self.now().offset
+      return nok(code)
+    }
   }
 }
 

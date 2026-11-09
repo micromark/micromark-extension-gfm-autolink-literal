@@ -377,6 +377,32 @@ test('micromark-extension-gfm-autolink-literal', async function (t) {
       )
     }
   )
+
+  await t.test(
+    'should support long runs of trailing punctuation-like characters in linear time',
+    async function () {
+      const run = '.'.repeat(1e4)
+      const then = Date.now()
+
+      assert.equal(
+        micromark('https://a.b/' + run + 'c www.a' + run + 'b', {
+          extensions: [gfmAutolinkLiteral()],
+          htmlExtensions: [gfmAutolinkLiteralHtml()]
+        }),
+        '<p><a href="https://a.b/' +
+          run +
+          'c">https://a.b/' +
+          run +
+          'c</a> <a href="http://www.a' +
+          run +
+          'b">www.a' +
+          run +
+          'b</a></p>'
+      )
+
+      assert.ok(Date.now() - then < 1000)
+    }
+  )
 })
 
 test('fixtures', async function (t) {
